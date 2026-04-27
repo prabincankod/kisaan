@@ -6,5 +6,6 @@ import { authMiddleware } from '../../middlewares/index.js';
 const router: ExpressRouter = Router();
 
 router.get('/', authMiddleware, statsController.getStats);
+router.get('/farmer', authMiddleware, statsController.getStats);
 
 export default router;

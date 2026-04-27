@@ -1,20 +1,61 @@
 import { Response } from 'express';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { join } from 'path';
 import prisma from '../../utils/prisma.js';
 import { successResponse, errorResponse } from '../../utils/response.js';
 import { AuthenticatedRequest } from '../../types/index.js';
 import { CreateProductInput, UpdateProductInput, ProductQueryInput } from './product.validation.js';
-import { compareSync } from 'bcryptjs';
+
+const UPLOADS_DIR = join(process.cwd(), 'uploads');
+
+function saveBase64Image(base64Data: string): string | null {
+  try {
+    if (!base64Data || !base64Data.startsWith('data:image/')) {
+      return null;
+    }
+    
+    const matches = base64Data.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!matches) return null;
+    
+    const ext = matches[1];
+    const data = matches[2];
+    const buffer = Buffer.from(data, 'base64');
+    const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${ext}`;
+    
+    if (!existsSync(UPLOADS_DIR)) {
+      mkdirSync(UPLOADS_DIR, { recursive: true });
+    }
+    
+    const filepath = join(UPLOADS_DIR, filename);
+    writeFileSync(filepath, buffer);
+    
+    return `/uploads/${filename}`;
+  } catch (error) {
+    console.error('Error saving image:', error);
+    return null;
+  }
+}
 
 const createProduct = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> => {
   try {
-    const { title, description, nutritionalInfo, unit, price, quantityAvailable, categoryIds } = req.body;
-    let farmerId = req.user?.id;
-    farmerId = Number(farmerId);
-
-    const files = req.files as Express.Multer.File[];
+    let { title, description, nutritionalInfo, unit, price, quantityAvailable, categoryIds, images } = req.body;
+    
+    console.log('Received body:', JSON.stringify(req.body).substring(0, 500));
+    
+    // Parse JSON strings if needed
+    if (typeof categoryIds === 'string') {
+      try { categoryIds = JSON.parse(categoryIds); } catch { categoryIds = []; }
+    }
+    if (typeof images === 'string') {
+      try { images = JSON.parse(images); } catch { images = []; }
+    }
+    if (typeof price === 'string') price = Number(price);
+    if (typeof quantityAvailable === 'string') quantityAvailable = Number(quantityAvailable);
+    
+    const farmerId = req.user!.id;
 
     const product = await prisma.product.create({
       data: {
@@ -24,11 +65,15 @@ const createProduct = async (
         unit: unit || 'kg',
         price: Number(price),
         quantityAvailable: Number(quantityAvailable) || 0,
-        farmerId,
+        farmerId: Number(farmerId),
         images: {
-          create: files?.map((f) => ({
-            url: `/uploads/${f.filename}`,
-          })),
+          create: images && Array.isArray(images) 
+            ? images
+                .filter((img: string) => img && img.startsWith('data:image/'))
+                .map((img: string) => saveBase64Image(img))
+                .filter((url): url is string => url !== null)
+                .map((url: string) => ({ url }))
+            : []
         },
       },
       include: {
@@ -37,22 +82,21 @@ const createProduct = async (
       },
     });
 
-    // Create categories after product is created (to validate them first)
-    if (categoryIds && Array.isArray(categoryIds)) {
-      const categoryIdArray = categoryIds as any[];
-      const validCategories = await prisma.category.findMany({
-        where: { id: { in: categoryIdArray.map(id => Number(id)) } },
-        select: { id: true }
-      });
-      
-      if (validCategories.length > 0) {
-        await prisma.productCategory.createMany({
-          data: validCategories.map(c => ({ productId: product.id, categoryId: c.id })),
+    if (categoryIds) {
+      const ids = Array.isArray(categoryIds) ? categoryIds : JSON.parse(categoryIds);
+      if (ids.length > 0) {
+        const validCategories = await prisma.category.findMany({
+          where: { id: { in: ids.map((id: any) => Number(id)) } },
+          select: { id: true }
         });
+        if (validCategories.length > 0) {
+          await prisma.productCategory.createMany({
+            data: validCategories.map(c => ({ productId: product.id, categoryId: c.id })),
+          });
+        }
       }
     }
 
-    // Fetch updated product with relations
     const updatedProduct = await prisma.product.findUnique({
       where: { id: product.id },
       include: {
@@ -74,20 +118,24 @@ const updateProduct = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    let { categoryIds, price, quantityAvailable, isActive, ...data } = req.body;
-    if (typeof categoryIds === 'string') {
-      try {
-        categoryIds = JSON.parse(categoryIds);
-      } catch {
-        categoryIds = [];
-      }
-    }
-    delete data.existingImageIds;
+    let { categoryIds, price, quantityAvailable, isActive, images, removeImageIds, ...data } = req.body;
     const farmerId = req.user!.id;
-    const files = req.files as Express.Multer.File[];
+
+    // Parse JSON strings if needed
+    if (typeof categoryIds === 'string') {
+      try { categoryIds = JSON.parse(categoryIds); } catch { categoryIds = []; }
+    }
+    if (typeof images === 'string') {
+      try { images = JSON.parse(images); } catch { images = []; }
+    }
+    if (typeof removeImageIds === 'string') {
+      try { removeImageIds = JSON.parse(removeImageIds); } catch { removeImageIds = []; }
+    }
+    if (typeof price === 'string') price = Number(price);
+    if (typeof quantityAvailable === 'string') quantityAvailable = Number(quantityAvailable);
 
     const product = await prisma.product.findFirst({
-      where: { id: Number(id), farmerId },
+      where: { id: Number(id), farmerId: Number(farmerId) },
     });
 
     if (!product) {
@@ -95,41 +143,41 @@ const updateProduct = async (
       return;
     }
 
-    // Update categories
-    if (categoryIds !== undefined) {
-      const ids = Array.isArray(categoryIds) ? categoryIds : [categoryIds];
+    // Remove deleted images
+    if (removeImageIds && Array.isArray(removeImageIds) && removeImageIds.length > 0) {
+      await prisma.productImage.deleteMany({
+        where: { id: { in: removeImageIds.map((id: any) => Number(id)) } }
+      });
+    }
+
+    if (categoryIds && Array.isArray(categoryIds)) {
       await prisma.productCategory.deleteMany({ where: { productId: product.id } });
-      
-      if (ids.length > 0) {
-        // Validate that all category IDs exist
-        const validCategories = await prisma.category.findMany({
-          where: { id: { in: ids.map((id: any) => Number(id)) } },
-          select: { id: true }
+      const validCategories = await prisma.category.findMany({
+        where: { id: { in: categoryIds.map((id: any) => Number(id)) } },
+        select: { id: true }
+      });
+      if (validCategories.length > 0) {
+        await prisma.productCategory.createMany({
+          data: validCategories.map(c => ({ productId: product.id, categoryId: c.id })),
         });
-        const validIds = validCategories.map(c => c.id);
-        
-        if (validIds.length > 0) {
-          await prisma.productCategory.createMany({
-            data: validIds.map((cid: number) => ({ productId: product.id, categoryId: cid })),
-          });
-        }
       }
     }
 
-    // Add new images if any
-    if (files && files.length > 0) {
-      await prisma.productImage.createMany({
-        data: files.map((f) => ({
-          productId: product.id,
-          url: `/uploads/${f.filename}`,
-        })),
-      });
+    if (images && Array.isArray(images)) {
+      const newImages = images
+        .filter((img: string) => img && img.startsWith('data:image/'))
+        .map((img: string) => saveBase64Image(img))
+        .filter((url): url is string => url !== null)
+        .map((url: string) => ({ productId: product.id, url }));
+      
+      if (newImages.length > 0) {
+        await prisma.productImage.createMany({ data: newImages });
+      }
     }
 
     const updated = await prisma.product.update({
       where: { id: product.id },
       data: {
-
         ...data,
         price: price ? Number(price) : undefined,
         quantityAvailable: quantityAvailable ? Number(quantityAvailable) : undefined,
@@ -157,7 +205,7 @@ const deleteProduct = async (
     const farmerId = req.user!.id;
 
     const product = await prisma.product.findFirst({
-      where: { id: Number(id), farmerId },
+      where: { id: Number(id), farmerId: Number(farmerId) },
     });
 
     if (!product) {
@@ -187,10 +235,10 @@ const getProducts = async (
     const limit = Number(req.query.limit) || 20;
 
     const where: any = { isDeleted: false };
-    if (categoryId) where.categories = { some: { categoryId } };
+    if (categoryId) where.categories = { some: { categoryId: Number(categoryId) } };
     if (farmerId) where.farmerId = Number(farmerId);
     if (search) where.title = { contains: search, mode: 'insensitive' };
-    if (isActive !== undefined) where.isActive = isActive === 'true' || isActive === true;
+    if (isActive !== undefined) where.isActive = String(isActive) === 'true';
 
     const skip = (page - 1) * limit;
 
@@ -206,9 +254,7 @@ const getProducts = async (
         },
         orderBy: { createdAt: 'desc' },
       }),
-
       prisma.product.count({ where }),
-
     ]);
 
     res.json(successResponse({
@@ -242,7 +288,6 @@ const getProductById = async (
       return;
     }
 
-    console.log(product)
     res.json(successResponse(product));
   } catch (error) {
     console.error('Get product error:', error);
@@ -257,10 +302,10 @@ const uploadProductImages = async (
   try {
     const { id } = req.params;
     const farmerId = req.user!.id;
-    const files = req.files as Express.Multer.File[];
+    const { images } = req.body;
 
     const product = await prisma.product.findFirst({
-      where: { id: Number(id), farmerId },
+      where: { id: Number(id), farmerId: Number(farmerId) },
     });
 
     if (!product) {
@@ -268,14 +313,23 @@ const uploadProductImages = async (
       return;
     }
 
-    const images = await prisma.productImage.createMany({
-      data: files.map((f) => ({
-        url: `/uploads/${f.filename}`,
-        productId: product.id,
-      })),
+    if (images && Array.isArray(images)) {
+      const newImages = images
+        .filter((img: string) => img && img.startsWith('data:image/'))
+        .map((img: string) => ({ url: saveBase64Image(img) }))
+        .filter(Boolean)
+        .map(url => ({ productId: product.id, url: url! }));
+      
+      if (newImages.length > 0) {
+        await prisma.productImage.createMany({ data: newImages });
+      }
+    }
+
+    const updatedImages = await prisma.productImage.findMany({
+      where: { productId: product.id }
     });
 
-    res.json(successResponse(images, 'Images uploaded'));
+    res.json(successResponse(updatedImages, 'Images uploaded'));
   } catch (error) {
     console.error('Upload images error:', error);
     res.status(500).json(errorResponse('Failed to upload images'));
@@ -292,7 +346,7 @@ const getMyProducts = async (
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
-        where: { farmerId, isDeleted: false },
+        where: { farmerId: Number(farmerId), isDeleted: false },
         skip: (Number(page) - 1) * Number(limit),
         take: Number(limit),
         include: {
@@ -301,7 +355,7 @@ const getMyProducts = async (
         },
         orderBy: { createdAt: 'desc' },
       }),
-      prisma.product.count({ where: { farmerId, isDeleted: false } }),
+      prisma.product.count({ where: { farmerId: Number(farmerId), isDeleted: false } }),
     ]);
 
     res.json(successResponse({

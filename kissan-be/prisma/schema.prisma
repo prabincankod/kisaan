@@ -17,17 +17,13 @@ enum OrderStatus {
   confirmed
   shipped
   delivered
-}
-
-enum OrderSource {
-  cart
-  quotation
-}
-
-enum QuotationStatus {
-  pending
-  accepted
   rejected
+  cancelled
+}
+
+enum OrderType {
+  buy
+  quotation
 }
 
 enum ProductUnit {
@@ -46,13 +42,9 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  products        Product[]
-  carts           Cart[]          @relation("UserCarts")
-  farmerCarts     Cart[]          @relation("FarmerCarts")
-  quotations      Quotation[]      @relation("UserQuotations")
-  farmerQuotes    Quotation[]      @relation("FarmerQuotations")
-  orders          Order[]         @relation("UserOrders")
-  farmerOrders    Order[]         @relation("FarmerOrders")
+  products     Product[]
+  orders        Order[]       @relation("UserOrders")
+  farmerOrders Order[]       @relation("FarmerOrders")
 
   @@index([email])
   @@index([role])
@@ -74,10 +66,8 @@ model Product {
   farmer           User              @relation(fields: [farmerId], references: [id])
 
   images           ProductImage[]
-  categories       ProductCategory[]
-  cartItems        CartItem[]
-  quotationItems   QuotationItem[]
-  orderItems       OrderItem[]
+  categories      ProductCategory[]
+  orderItems      OrderItem[]
 
   @@index([farmerId])
   @@index([isActive])
@@ -109,76 +99,20 @@ model ProductCategory {
   @@id([productId, categoryId])
 }
 
-model Cart {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  userId    Int        @unique
-  farmerId  Int
-  user      User       @relation("UserCarts", fields: [userId], references: [id])
-  farmer    User       @relation("FarmerCarts", fields: [farmerId], references: [id])
-  items     CartItem[]
-
-  @@index([userId])
-  @@index([farmerId])
-}
-
-model CartItem {
-  id        Int     @id @default(autoincrement())
-  quantity  Int
-  cartId    Int
-  productId Int
-  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
-
-  @@unique([cartId, productId])
-  @@index([cartId])
-  @@index([productId])
-}
-
-model Quotation {
-  id        Int             @id @default(autoincrement())
-  status    QuotationStatus @default(pending)
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  userId    Int
-  farmerId  Int
-  user      User            @relation("UserQuotations", fields: [userId], references: [id])
-  farmer    User            @relation("FarmerQuotations", fields: [farmerId], references: [id])
-  items     QuotationItem[]
-
-  @@index([userId])
-  @@index([farmerId])
-  @@index([status])
-}
-
-model QuotationItem {
-  id            Int        @id @default(autoincrement())
-  quantity      Int
-  offeredPrice  Decimal    @db.Decimal(10, 2)
-  quotationId   Int
-  quotation     Quotation  @relation(fields: [quotationId], references: [id], onDelete: Cascade)
-  productId     Int
-  product       Product    @relation(fields: [productId], references: [id])
-
-  @@index([quotationId])
-  @@index([productId])
-}
-
 model Order {
-  id             Int          @id @default(autoincrement())
-  totalAmount    Decimal      @db.Decimal(10, 2)
+  id              Int          @id @default(autoincrement())
+  totalAmount     Decimal      @db.Decimal(10, 2)
   status         OrderStatus  @default(pending)
-  source         OrderSource
-  paymentStatus  String       @default("pending")
-  shippingAddress String?
+  type           OrderType   @default(buy)
+  paymentStatus String      @default("pending")
+  shippingAddress  String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   userId         Int
-  farmerId       Int
-  user           User         @relation("UserOrders", fields: [userId], references: [id])
-  farmer         User         @relation("FarmerOrders", fields: [farmerId], references: [id])
-  items          OrderItem[]
+  farmerId      Int
+  user          User        @relation("UserOrders", fields: [userId], references: [id])
+  farmer        User        @relation("FarmerOrders", fields: [farmerId], references: [id])
+  items         OrderItem[]
 
   @@index([userId])
   @@index([farmerId])
@@ -186,13 +120,13 @@ model Order {
 }
 
 model OrderItem {
-  id        Int     @id @default(autoincrement())
-  quantity  Int
-  price     Decimal @db.Decimal(10, 2)
-  orderId   Int
-  productId Int
+  id         Int     @id @default(autoincrement())
+  quantity   Int
+  price      Decimal @db.Decimal(10, 2)
+  orderId    Int
+  productId  Int
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
 
   @@index([orderId])
   @@index([productId])

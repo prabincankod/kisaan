@@ -7,8 +7,6 @@ import { swaggerSpec } from './config/swagger.js';
 import { authRouter } from './modules/auth/index.js';
 import { productRouter } from './modules/product/index.js';
 import { categoryRouter } from './modules/category/index.js';
-import { cartRouter } from './modules/cart/index.js';
-import { quotationRouter } from './modules/quotation/index.js';
 import { orderRouter } from './modules/order/index.js';
 import statsRouter from './modules/stats/stats.routes.js';
 
@@ -16,8 +14,8 @@ const app: Application = express();
 
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json({}));
-app.use(express.urlencoded({ extended: false,  }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -29,8 +27,6 @@ app.get('/api', (_req: Request, res: Response) => {
 app.use('/api/auth', authRouter);
 app.use('/api/products', productRouter);
 app.use('/api/categories', categoryRouter);
-app.use('/api/cart', cartRouter);
-app.use('/api/quotations', quotationRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/stats', statsRouter);
 

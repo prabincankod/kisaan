@@ -5,6 +5,20 @@ import { successResponse, errorResponse } from '../../utils/response.js';
 import { AuthenticatedRequest } from '../../types/index.js';
 import { CreateOrderFromCartInput, UpdateOrderStatusInput } from './order.validation.js';
 
+interface CreateOrderItem {
+  productId: number;
+  quantity: number;
+  price: number;
+}
+
+interface CreateOrderInput {
+  farmerId: number;
+  items: CreateOrderItem[];
+  type?: 'buy' | 'quotation';
+  totalAmount: number;
+  shippingAddress?: string;
+}
+
 const getOrders = async (
   req: AuthenticatedRequest,
   res: Response
@@ -12,13 +26,14 @@ const getOrders = async (
   try {
     const userId = req.user!.id;
     const role = req.user!.role;
-    const { page = 1, limit = 20, status } = req.query as any;
+    const { page = 1, limit = 20, status, type } = req.query as any;
 
     const where: Prisma.OrderWhereInput = role === 'farmer'
       ? { farmerId: userId }
       : { userId };
 
     if (status) where.status = status;
+    if (type) where.type = type;
 
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
@@ -28,7 +43,11 @@ const getOrders = async (
         include: {
           user: { select: { id: true, name: true, phone: true, address: true } },
           farmer: { select: { id: true, name: true, phone: true, address: true } },
-          items: { include: { product: { include: { images: true } } } },
+          items: {
+            include: {
+              product: { include: { images: true } },
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
       }),
@@ -59,7 +78,11 @@ const getOrderById = async (
       include: {
         user: { select: { id: true, name: true, phone: true, address: true } },
         farmer: { select: { id: true, name: true, phone: true, address: true } },
-        items: { include: { product: { include: { images: true } } } },
+        items: {
+          include: {
+            product: { include: { images: true } },
+          },
+        },
       },
     });
 
@@ -91,64 +114,65 @@ const createOrderFromCart = async (
 ): Promise<void> => {
   try {
     const userId = req.user!.id;
-    const { shippingAddress } = req.body as CreateOrderFromCartInput;
+    const { farmerId, items, type, totalAmount, shippingAddress } = req.body as CreateOrderInput;
 
-    const cart = await prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        items: { include: { product: true } },
-      },
-    });
-
-    if (!cart || cart.items.length === 0) {
-      res.status(400).json(errorResponse('Cart is empty'));
+    if (!items || items.length === 0) {
+      res.status(400).json(errorResponse('No items provided'));
       return;
     }
 
-    for (const item of cart.items) {
-      if (item.product.quantityAvailable < item.quantity) {
-        res.status(400).json(errorResponse(`Insufficient stock for ${item.product.title}`));
+    for (const item of items) {
+      const product = await prisma.product.findUnique({
+        where: { id: item.productId },
+      });
+
+      if (!product) {
+        res.status(400).json(errorResponse(`Product ${item.productId} not found`));
+        return;
+      }
+
+      if (type === 'buy' && product.quantityAvailable < item.quantity) {
+        res.status(400).json(errorResponse(`Insufficient stock for ${product.title}`));
         return;
       }
     }
 
-    const totalAmount = cart.items.reduce(
-      (sum, item) => sum + Number(item.product.price) * item.quantity,
-      0
-    );
-
     const order = await prisma.order.create({
       data: {
         userId,
-        farmerId: cart.farmerId,
+        farmerId,
         totalAmount,
-        source: 'cart',
+        type: type || 'buy',
         shippingAddress: shippingAddress || '',
         items: {
-          create: cart.items.map((item) => ({
+          create: items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
-            price: item.product.price,
+            price: item.price,
           })),
         },
       },
       include: {
         user: { select: { id: true, name: true } },
         farmer: { select: { id: true, name: true } },
-        items: { include: { product: true } },
+        items: {
+          include: {
+            product: { include: { images: true } },
+          },
+        },
       },
     });
 
-    for (const item of cart.items) {
-      await prisma.product.update({
-        where: { id: item.productId },
-        data: { quantityAvailable: { decrement: item.quantity } },
-      });
+    if (type === 'buy') {
+      for (const item of items) {
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: { quantityAvailable: { decrement: item.quantity } },
+        });
+      }
     }
 
-    await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
-
-    res.status(201).json(successResponse(order, 'Order created from cart'));
+    res.status(201).json(successResponse(order, type === 'quotation' ? 'Quotation sent!' : 'Order created!'));
   } catch (error) {
     console.error('Create order from cart error:', error);
     res.status(500).json(errorResponse('Failed to create order'));
@@ -182,9 +206,22 @@ const updateOrderStatus = async (
       include: {
         user: { select: { id: true, name: true } },
         farmer: { select: { id: true, name: true } },
-        items: { include: { product: true } },
+        items: {
+          include: {
+            product: { include: { images: true } },
+          },
+        },
       },
     });
+
+    if (status === 'confirmed' && order.type === 'buy') {
+      for (const item of order.items as any) {
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: { quantityAvailable: { decrement: item.quantity } },
+        });
+      }
+    }
 
     res.json(successResponse(updated, 'Order status updated'));
   } catch (error) {

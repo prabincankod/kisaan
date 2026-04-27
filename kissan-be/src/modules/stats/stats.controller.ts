@@ -9,27 +9,32 @@ const getStats = async (req: AuthenticatedRequest, res: Response): Promise<void>
     const role = req.user!.role;
 
     if (role === 'farmer') {
-      const [productCount, pendingQuotations, activeOrders] = await Promise.all([
-        prisma.product.count({ where: { farmerId: userId, isDeleted: false } }),
-        prisma.quotation.count({ where: { farmerId: userId, status: 'pending' } }),
-        prisma.order.count({ where: { farmerId: userId, status: { in: ['pending', 'confirmed', 'shipped'] } } }),
-      ]);
+      const productCount = await prisma.product.count({ 
+        where: { farmerId: userId, isDeleted: false } 
+      });
+      
+      const activeOrders = await prisma.order.count({ 
+        where: { farmerId: userId, status: { in: ['pending', 'confirmed', 'shipped'] } } 
+      });
+
+      const ordersLast24h = await prisma.order.count({
+        where: {
+          farmerId: userId,
+          createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        },
+      });
 
       res.json(successResponse({
         products: productCount,
-        quotations: pendingQuotations,
         orders: activeOrders,
+        ordersLast24h,
       }));
     } else {
-      const [orderCount, activeQuotations, cartItems] = await Promise.all([
-        prisma.order.count({ where: { userId } }),
-        prisma.quotation.count({ where: { userId, status: 'pending' } }),
-        prisma.cartItem.count({ where: { cart: { userId } } }),
-      ]);
+      const orderCount = await prisma.order.count({ where: { userId } });
+      const cartItems = await prisma.cartItem.count({ where: { cart: { userId } } });
 
       res.json(successResponse({
         orders: orderCount,
-        quotations: activeQuotations,
         cart: cartItems,
       }));
     }

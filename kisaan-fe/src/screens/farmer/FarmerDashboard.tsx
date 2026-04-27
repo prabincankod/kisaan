@@ -11,7 +11,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "../../store/auth.store";
-import { getStats, getOrders } from "../../api/order.api";
+import { getStats } from "../../api/stats.api";
+import { getOrders } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 
 type Order = {

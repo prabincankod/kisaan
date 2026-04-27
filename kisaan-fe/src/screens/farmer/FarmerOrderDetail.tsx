@@ -14,10 +14,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { getOrder, updateOrderStatus } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 
-const STATUS_FLOW = [
-  { status: "confirmed", label: "Confirm Order", next: "preparing" },
-  { status: "preparing", label: "Start Preparing", next: "outForDelivery" },
-  { status: "outForDelivery", label: "Mark Delivered", next: "delivered" },
+type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "rejected" | "cancelled";
+
+const STATUS_FLOW: { status: OrderStatus; label: string; next: OrderStatus }[] = [
+  { status: "confirmed", label: "Confirm Order", next: "shipped" },
+  { status: "shipped", label: "Mark Delivered", next: "delivered" },
 ];
 
 export default function FarmerOrderDetail() {
@@ -33,8 +34,8 @@ export default function FarmerOrderDetail() {
       return res.data;
     },
   });
-  const { mutate: updateStatus } = useMutation({
-    mutationFn: (status: string) => updateOrderStatus(orderId, status),
+  const { mutate: updateStatus, isPending: isUpdating } = useMutation({
+    mutationFn: (status: OrderStatus) => updateOrderStatus(orderId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["order", orderId] });
       queryClient.invalidateQueries({ queryKey: ["farmer-orders"] });
@@ -71,25 +72,25 @@ export default function FarmerOrderDetail() {
           <Text style={styles.statusText}>{order.status}</Text>
         </View>
       </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Customer</Text>
-        <View style={styles.customerRow}>
-          <Ionicons name="person" size={24} color={colors.primary} />
-          <View style={styles.customerInfo}>
-            <Text style={styles.customerName}>
-              {order.customer?.name || "Customer"}
-            </Text>
-            <Text style={styles.customerPhone}>
-              {order.customer?.phone || "No phone"}
-            </Text>
-          </View>
-          {order.customer?.phone && (
-            <TouchableOpacity style={styles.callButton}>
-              <Ionicons name="call" size={24} color={colors.primary} />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+       <View style={styles.section}>
+         <Text style={styles.sectionTitle}>Customer</Text>
+         <View style={styles.customerRow}>
+           <Ionicons name="person" size={24} color={colors.primary} />
+           <View style={styles.customerInfo}>
+             <Text style={styles.customerName}>
+               {order.user?.name || "Customer"}
+             </Text>
+             <Text style={styles.customerPhone}>
+               {order.user?.phone || "No phone"}
+             </Text>
+           </View>
+           {order.user?.phone && (
+             <TouchableOpacity style={styles.callButton}>
+               <Ionicons name="call" size={24} color={colors.primary} />
+             </TouchableOpacity>
+           )}
+         </View>
+       </View>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Items</Text>
         {order.items.map((item: any, index: number) => (
@@ -122,8 +123,44 @@ export default function FarmerOrderDetail() {
       <View style={styles.divider} />
       <View style={styles.totalSection}>
         <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.totalValue}>₹{order.total}</Text>
+        <Text style={styles.totalValue}>₹{order.totalAmount}</Text>
       </View>
+      {order.type === "quotation" && order.negotiatedTotal && (
+        <View style={styles.negotiationSection}>
+          <View style={styles.negotiationHeader}>
+            <Ionicons name="chatbubble-ellipses" size={20} color={colors.primary} />
+            <Text style={styles.negotiationTitle}>Price Negotiation</Text>
+          </View>
+          <View style={styles.negotiationRow}>
+            <Text style={styles.negotiationLabel}>Buyer's Proposed Total:</Text>
+            <Text style={styles.negotiationValue}>₹{order.negotiatedTotal}</Text>
+          </View>
+          <View style={styles.negotiationRow}>
+            <Text style={styles.negotiationLabel}>Your Listed Total:</Text>
+            <Text style={styles.negotiationValue}>₹{order.totalAmount}</Text>
+          </View>
+          {order.status === "pending" && (
+            <View style={styles.negotiationActions}>
+              <TouchableOpacity
+                style={[styles.acceptButton]}
+                onPress={() => updateStatus("confirmed")}
+                disabled={isUpdating}
+              >
+                <Text style={styles.acceptButtonText}>
+                  {isUpdating ? "Processing..." : "Accept & Confirm"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.rejectButton]}
+                onPress={() => updateStatus("rejected")}
+                disabled={isUpdating}
+              >
+                <Text style={styles.rejectButtonText}>Reject</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      )}
       {nextAction && (
         <TouchableOpacity
           style={styles.actionButton}
@@ -215,4 +252,67 @@ const styles = StyleSheet.create({
     margin: spacing.md,
   },
   actionText: { ...typography.button, color: colors.onPrimary },
+  negotiationSection: {
+    padding: spacing.md,
+    backgroundColor: colors.surface,
+    marginHorizontal: spacing.md,
+    borderRadius: spacing.md,
+    marginBottom: spacing.md,
+  },
+  negotiationHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  negotiationTitle: {
+    ...typography.headline,
+    color: colors.onSurface,
+  },
+  negotiationRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacing.sm,
+  },
+  negotiationLabel: {
+    ...typography.body,
+    color: colors.onSurfaceSecondary,
+  },
+  negotiationValue: {
+    ...typography.title3,
+    color: colors.primary,
+  },
+  negotiationActions: {
+    flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  acceptButton: {
+    flex: 1,
+    backgroundColor: colors.success,
+    borderRadius: spacing.sm,
+    padding: spacing.md,
+    alignItems: "center",
+  },
+  acceptButtonText: {
+    ...typography.body,
+    color: colors.onPrimary,
+    fontWeight: "600",
+  },
+  rejectButton: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
+    padding: spacing.md,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.error,
+  },
+  rejectButtonText: {
+    ...typography.body,
+    color: colors.error,
+    fontWeight: "600",
+  },
 });
+

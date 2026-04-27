@@ -16,8 +16,7 @@ import { colors, typography, spacing } from "../../theme/designSystem";
 const STATUS_STEPS = [
   { status: "pending", label: "Order Placed", icon: "checkmark" },
   { status: "confirmed", label: "Confirmed", icon: "checkmark" },
-  { status: "preparing", label: "Preparing", icon: "basket" },
-  { status: "outForDelivery", label: "Out for Delivery", icon: "car" },
+  { status: "shipped", label: "Shipped", icon: "car" },
   { status: "delivered", label: "Delivered", icon: "checkmark" },
 ];
 
@@ -113,12 +112,12 @@ export default function BuyerOrderDetail() {
           </View>
         ))}
       </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Delivery Address</Text>
-        <Text style={styles.addressText}>
-          {order.address || "Not provided"}
-        </Text>
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Delivery Address</Text>
+          <Text style={styles.addressText}>
+            {order.shippingAddress || "Not provided"}
+          </Text>
+        </View>
       {order.farmer && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Farmer</Text>

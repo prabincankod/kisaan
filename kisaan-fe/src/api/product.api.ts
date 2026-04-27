@@ -69,6 +69,7 @@ export const createProduct = (payload: ProductPayload) =>
   api.post<{ success: boolean; data: Product; message: string }>(
     "/products",
     payload,
+    { headers: { "Content-Type": "application/json" } },
   );
 
 export const updateProduct = (id: number, payload: ProductPayload) =>
@@ -84,4 +85,5 @@ export const uploadProductImages = (id: number, images: string[]) =>
   api.post<{ success: boolean; data: any; message: string }>(
     `/products/${id}/images`,
     { images },
+    { headers: { "Content-Type": "application/json" } },
   );

@@ -4,6 +4,7 @@ export interface OrderItem {
   id: number;
   quantity: number;
   price: number;
+  negotiatedPrice?: number | null;
   productId: number;
   product: {
     id: number;
@@ -17,6 +18,7 @@ export interface OrderItem {
 export interface Order {
   id: number;
   totalAmount: number;
+  negotiatedTotal?: number | null;
   status:
     | "pending"
     | "confirmed"
@@ -50,6 +52,7 @@ export interface CreateOrderParams {
   farmerId: number;
   items: { productId: number; quantity: number; price: number }[];
   totalAmount: number;
+  negotiatedTotal?: number;
   type?: "buy" | "quotation";
   shippingAddress?: string;
 }

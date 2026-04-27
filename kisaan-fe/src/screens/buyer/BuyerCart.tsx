@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   FlatList,
   TouchableOpacity,
@@ -12,7 +13,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCartStore } from "../../store/cart.store";
-import { createOrder } from "../../api/order.api";
+import { createOrderFromCart } from "../../api/order.api";
 import { useMutation } from "@tanstack/react-query";
 import { colors, typography, spacing } from "../../theme/designSystem";
 
@@ -31,12 +32,14 @@ type CartItem = {
 
 export default function BuyerCart() {
   const navigation = useNavigation<any>();
-  const { items, removeItem, updateQuantity, clearCart, total } =
+  const { items, removeItem, updateQuantity, clearCart, getTotal } =
     useCartStore();
   const [address, setAddress] = useState("");
+  const [negotiatedTotal, setNegotiatedTotal] = useState("");
+  const [negotiateMode, setNegotiateMode] = useState(false);
 
-  const { mutate: checkout, isLoading } = useMutation({
-    mutationFn: createOrder,
+  const { mutate: checkout, isPending: isCheckingOut } = useMutation({
+    mutationFn: (params: any) => createOrderFromCart(params),
     onSuccess: () => {
       Alert.alert("Success", "Order placed successfully!");
       clearCart();
@@ -49,12 +52,31 @@ export default function BuyerCart() {
       Alert.alert("Error", "Please add a delivery address");
       return;
     }
+    if (items.length === 0) {
+      Alert.alert("Error", "Your cart is empty");
+      return;
+    }
+    
+    const farmerId = items[0]?.product?.farmerId;
+    if (!farmerId) {
+      Alert.alert("Error", "Unable to determine farmer for this order");
+      return;
+    }
+
+    const hasNegotiation = negotiateMode && negotiatedTotal.trim() !== "";
+    const finalTotal = hasNegotiation ? parseFloat(negotiatedTotal) : getTotal();
+
     checkout({
-      address,
+      farmerId,
       items: items.map((i) => ({
         productId: i.product.id,
         quantity: i.quantity,
+        price: i.product.price,
       })),
+      totalAmount: hasNegotiation ? finalTotal : getTotal(),
+      type: hasNegotiation ? "quotation" : "buy",
+      shippingAddress: address,
+      ...(hasNegotiation && { negotiatedTotal: finalTotal }),
     });
   };
 
@@ -67,7 +89,6 @@ export default function BuyerCart() {
             "https://placehold.co/100x100/F5B800/000000?text=Product",
         }}
         style={styles.itemImage}
-        contentFit="cover"
       />
       <View style={styles.itemInfo}>
         <Text style={styles.itemTitle} numberOfLines={1}>
@@ -133,7 +154,7 @@ export default function BuyerCart() {
             style={styles.addressInput}
             onPress={() =>
               Alert.prompt("Address", "Enter delivery address", (text) =>
-                setAddress(text || ""),
+                setAddress(text || "")
               )
             }
           >
@@ -148,17 +169,60 @@ export default function BuyerCart() {
               color={colors.onSurfaceSecondary}
             />
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.negotiateToggle}
+            onPress={() => {
+              setNegotiateMode(!negotiateMode);
+              setNegotiatedTotal("");
+            }}
+          >
+            <Ionicons
+              name={negotiateMode ? "chevron-up" : "chevron-down"}
+              size={16}
+              color={colors.primary}
+            />
+            <Text style={styles.negotiateToggleText}>
+              {negotiateMode ? "Hide Negotiation" : "Negotiate Final Price"}
+            </Text>
+          </TouchableOpacity>
+
+          {negotiateMode && (
+            <View style={styles.negotiatedTotalContainer}>
+              <Text style={styles.negotiatedTotalLabel}>Your Proposed Total:</Text>
+              <View style={styles.negotiatedTotalInput}>
+                <Text style={styles.currencySymbol}>₹</Text>
+                <TextInput
+                  style={styles.negotiatedTotalField}
+                  placeholder={getTotal().toString()}
+                  placeholderTextColor={colors.onSurfaceTertiary}
+                  value={negotiatedTotal}
+                  onChangeText={setNegotiatedTotal}
+                  keyboardType="decimal-pad"
+                />
+              </View>
+              <TouchableOpacity
+                style={styles.clearNegotiate}
+                onPress={() => setNegotiatedTotal("")}
+              >
+                <Ionicons name="close-circle" size={20} color={colors.onSurfaceSecondary} />
+              </TouchableOpacity>
+            </View>
+          )}
+
           <View style={styles.summary}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>₹{total}</Text>
+            <Text style={styles.totalValue}>
+              {negotiateMode && negotiatedTotal ? `₹${negotiatedTotal}` : `₹${getTotal()}`}
+            </Text>
           </View>
           <TouchableOpacity
-            style={[styles.checkoutButton, isLoading && styles.buttonDisabled]}
+            style={[styles.checkoutButton, isCheckingOut && styles.buttonDisabled]}
             onPress={handleCheckout}
-            disabled={isLoading}
+            disabled={isCheckingOut}
           >
             <Text style={styles.checkoutText}>
-              {isLoading ? "Processing..." : `Checkout • ₹${total}`}
+              {isCheckingOut ? "Processing..." : `Checkout • ₹${getTotal()}`}
             </Text>
           </TouchableOpacity>
         </View>
@@ -251,6 +315,63 @@ const styles = StyleSheet.create({
     color: colors.onSurfaceTertiary,
     flex: 1,
   },
+  negotiateToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  negotiateToggleText: {
+    ...typography.subhead,
+    color: colors.primary,
+  },
+  negotiateInfo: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.xs,
+    padding: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  negotiateInfoText: {
+    ...typography.caption1,
+    color: colors.onSurfaceSecondary,
+    flex: 1,
+  },
+  negotiatedPriceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  negotiatedPriceLabel: {
+    ...typography.caption1,
+    color: colors.onSurfaceSecondary,
+  },
+  negotiatedPriceInput: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    flex: 1,
+  },
+  currencySymbol: {
+    ...typography.subhead,
+    color: colors.primary,
+  },
+  negotiatedPriceField: {
+    flex: 1,
+    ...typography.subhead,
+    color: colors.onSurface,
+    padding: spacing.xs,
+  },
   summary: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -266,4 +387,30 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: { opacity: 0.5 },
   checkoutText: { ...typography.button, color: colors.onPrimary },
+  negotiatedTotalLabel: {
+    ...typography.subhead,
+    color: colors.onSurfaceSecondary,
+  },
+  negotiatedTotalContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  negotiatedTotalInput: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    flex: 1,
+  },
+  negotiatedTotalField: {
+    flex: 1,
+    ...typography.subhead,
+    color: colors.onSurface,
+    padding: spacing.xs,
+  },
+  clearNegotiate: { padding: spacing.sm },
 });

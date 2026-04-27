@@ -12,6 +12,7 @@ interface CreateOrderItem {
   productId: number;
   quantity: number;
   price: number;
+  negotiatedPrice?: number;
 }
 
 interface CreateOrderInput {
@@ -19,6 +20,7 @@ interface CreateOrderInput {
   items: CreateOrderItem[];
   type?: "buy" | "quotation";
   totalAmount: number;
+  negotiatedTotal?: number;
   shippingAddress?: string;
 }
 
@@ -129,7 +131,7 @@ const createOrderFromCart = async (
 ): Promise<void> => {
   try {
     const userId = req.user!.id;
-    const { farmerId, items, type, totalAmount, shippingAddress } =
+    const { farmerId, items, type, totalAmount, shippingAddress, negotiatedTotal } =
       req.body as CreateOrderInput;
 
     if (!items || items.length === 0) {
@@ -162,6 +164,7 @@ const createOrderFromCart = async (
         userId,
         farmerId,
         totalAmount,
+        negotiatedTotal: negotiatedTotal || null,
         type: type || "buy",
         shippingAddress: shippingAddress || "",
         items: {

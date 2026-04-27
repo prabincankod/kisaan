@@ -102,6 +102,7 @@ model ProductCategory {
 model Order {
   id              Int          @id @default(autoincrement())
   totalAmount     Decimal      @db.Decimal(10, 2)
+  negotiatedTotal  Decimal?     @db.Decimal(10, 2)
   status         OrderStatus  @default(pending)
   type           OrderType   @default(buy)
   paymentStatus String      @default("pending")
@@ -120,13 +121,14 @@ model Order {
 }
 
 model OrderItem {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   quantity   Int
   price      Decimal @db.Decimal(10, 2)
+  negotiatedPrice Decimal? @db.Decimal(10, 2)
   orderId    Int
   productId  Int
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product    Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
   @@index([orderId])
   @@index([productId])

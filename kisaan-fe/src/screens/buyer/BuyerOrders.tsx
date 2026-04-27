@@ -25,9 +25,9 @@ type Order = {
 const STATUS_COLORS: Record<string, string> = {
   pending: colors.warning,
   confirmed: colors.info,
-  preparing: colors.info,
-  outForDelivery: colors.info,
+  shipped: colors.info,
   delivered: colors.success,
+  rejected: colors.error,
   cancelled: colors.error,
 };
 

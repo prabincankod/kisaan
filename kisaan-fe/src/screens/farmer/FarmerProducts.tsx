@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { getFarmerProducts, deleteProduct } from "../../api/product.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 
+
 type Product = {
   id: number;
   title: string;

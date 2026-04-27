@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator, StyleSheet, StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 
@@ -64,7 +64,7 @@ function AppContent() {
   };
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer
         theme={{
           dark: false,
@@ -86,21 +86,15 @@ function AppContent() {
       >
         {getNavigator()}
       </NavigationContainer>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
 export default function App() {
   return (
-    <SafeAreaProvider style={{ paddingTop: StatusBar.currentHeight }}>
-      <StatusBar hidden />
-      <View style={{ flex: 1 }}>
-        <QueryClientProvider client={queryClient}>
-          {/* <StatusBar barStyle="dark-content" backgroundColor={colors.background} /> */}
-          <AppContent />
-        </QueryClientProvider>
-      </View>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
   );
 }
 

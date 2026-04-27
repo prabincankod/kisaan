@@ -6,7 +6,6 @@ import {
   ScrollView,
   RefreshControl,
   TouchableOpacity,
-  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +13,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "../../store/auth.store";
 import { getStats, getOrders } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 type Order = {
   id: number;
@@ -67,7 +65,6 @@ export default function FarmerDashboard() {
 
   return (
     <ScrollView
-      style={styles.container}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
       refreshControl={

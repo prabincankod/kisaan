@@ -14,7 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getOrders, updateOrderStatus } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
-
+import { SafeAreaView as SafeArea } from "react-native-safe-area-context";
 type Order = {
   id: number;
   status: string;
@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginRight: spacing.sm,
+    height: 200,
   },
   tabActive: { backgroundColor: colors.primary },
   tabText: { ...typography.subhead, color: colors.onSurface },

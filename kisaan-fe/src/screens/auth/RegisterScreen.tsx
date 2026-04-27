@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../hooks/useAuth";
 import { colors, typography, spacing } from "../../theme/designSystem";
@@ -31,119 +32,121 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Join Kissan today</Text>
-        </View>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
+            <Text style={styles.title}>Create Account</Text>
+            <Text style={styles.subtitle}>Join Kissan today</Text>
+          </View>
 
-        <View style={styles.roleSelector}>
-          <TouchableOpacity
-            style={[
-              styles.roleButton,
-              role === "buyer" && styles.roleButtonActive,
-            ]}
-            onPress={() => setRole("buyer")}
-          >
-            <Text
-              style={[
-                styles.roleText,
-                role === "buyer" && styles.roleTextActive,
-              ]}
-            >
-              Buyer
-            </Text>
-            <Text style={styles.roleDesc}>Fresh produce</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.roleButton,
-              role === "farmer" && styles.roleButtonActive,
-            ]}
-            onPress={() => setRole("farmer")}
-          >
-            <Text
-              style={[
-                styles.roleText,
-                role === "farmer" && styles.roleTextActive,
-              ]}
-            >
-              Farmer
-            </Text>
-            <Text style={styles.roleDesc}>Sell your harvest</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Your full name"
-              placeholderTextColor={colors.onSurfaceTertiary}
-              value={name}
-              onChangeText={setName}
-              textContentType="name"
-            />
-          </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="email@example.com"
-              placeholderTextColor={colors.onSurfaceTertiary}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              textContentType="emailAddress"
-            />
-          </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Create a password"
-              placeholderTextColor={colors.onSurfaceTertiary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              textContentType="newPassword"
-            />
-          </View>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              (!name || !email || !password || isLoading) &&
-                styles.buttonDisabled,
-            ]}
-            onPress={handleRegister}
-            disabled={isLoading || !name || !email || !password}
-          >
-            {isLoading ? (
-              <ActivityIndicator color={colors.onPrimary} />
-            ) : (
-              <Text style={styles.buttonText}>Create Account</Text>
-            )}
-          </TouchableOpacity>
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
+          <View style={styles.roleSelector}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Login" as never)}
+              style={[
+                styles.roleButton,
+                role === "buyer" && styles.roleButtonActive,
+              ]}
+              onPress={() => setRole("buyer")}
             >
-              <Text style={styles.linkText}>Sign In</Text>
+              <Text
+                style={[
+                  styles.roleText,
+                  role === "buyer" && styles.roleTextActive,
+                ]}
+              >
+                Buyer
+              </Text>
+              <Text style={styles.roleDesc}>Fresh produce</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.roleButton,
+                role === "farmer" && styles.roleButtonActive,
+              ]}
+              onPress={() => setRole("farmer")}
+            >
+              <Text
+                style={[
+                  styles.roleText,
+                  role === "farmer" && styles.roleTextActive,
+                ]}
+              >
+                Farmer
+              </Text>
+              <Text style={styles.roleDesc}>Sell your harvest</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your full name"
+                placeholderTextColor={colors.onSurfaceTertiary}
+                value={name}
+                onChangeText={setName}
+                textContentType="name"
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="email@example.com"
+                placeholderTextColor={colors.onSurfaceTertiary}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                textContentType="emailAddress"
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Create a password"
+                placeholderTextColor={colors.onSurfaceTertiary}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                textContentType="newPassword"
+              />
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                (!name || !email || !password || isLoading) &&
+                  styles.buttonDisabled,
+              ]}
+              onPress={handleRegister}
+              disabled={isLoading || !name || !email || !password}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={colors.onPrimary} />
+              ) : (
+                <Text style={styles.buttonText}>Create Account</Text>
+              )}
+            </TouchableOpacity>
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Already have an account? </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Login" as never)}
+              >
+                <Text style={styles.linkText}>Sign In</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

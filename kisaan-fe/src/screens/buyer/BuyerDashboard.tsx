@@ -8,7 +8,9 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Pressable,
+  SafeAreaView,
 } from "react-native";
+import { SafeAreaView as SafeArea } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
@@ -148,7 +150,7 @@ export default function BuyerDashboard() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeArea style={styles.container}>
       <FlatList
         data={products}
         renderItem={renderProduct}
@@ -160,7 +162,7 @@ export default function BuyerDashboard() {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </SafeArea>
   );
 }
 

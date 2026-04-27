@@ -10,4 +10,7 @@ export const getCategories = () =>
   api.get<{ success: boolean; data: Category[] }>("/categories");
 
 export const createCategory = (name: string) =>
-  api.post<{ success: boolean; data: Category; message: string }>("/categories", { name });
+  api.post<{ success: boolean; data: Category; message: string }>(
+    "/categories",
+    { name },
+  );

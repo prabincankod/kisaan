@@ -1,322 +1,515 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Kissan - Buyer Home</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Kissan - Buyer Home</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
-            "colors": {
-                    "surface": "#f8f9ff",
-                    "surface-container-high": "#dee9fc",
-                    "on-surface-variant": "#404943",
-                    "on-secondary": "#ffffff",
-                    "on-primary-container": "#a8e7c5",
-                    "inverse-on-surface": "#eaf1ff",
-                    "primary": "#0f5238",
-                    "on-tertiary-container": "#d5dccd",
-                    "surface-container-highest": "#d9e3f6",
-                    "on-tertiary-fixed": "#171d14",
-                    "inverse-surface": "#27313f",
-                    "on-error": "#ffffff",
-                    "secondary-fixed-dim": "#ffb77d",
-                    "secondary": "#904d00",
-                    "surface-tint": "#2c694e",
-                    "surface-container": "#e6eeff",
-                    "primary-container": "#2d6a4f",
-                    "error": "#ba1a1a",
-                    "surface-variant": "#d9e3f6",
-                    "on-primary": "#ffffff",
-                    "on-tertiary": "#ffffff",
-                    "surface-dim": "#d0dbed",
-                    "inverse-primary": "#95d4b3",
-                    "outline-variant": "#bfc9c1",
-                    "on-background": "#121c2a",
-                    "primary-fixed": "#b1f0ce",
-                    "on-primary-fixed": "#002114",
-                    "on-secondary-container": "#663500",
-                    "outline": "#707973",
-                    "on-secondary-fixed": "#2f1500",
-                    "on-tertiary-fixed-variant": "#42493e",
-                    "secondary-container": "#fe932c",
-                    "surface-container-lowest": "#ffffff",
-                    "on-surface": "#121c2a",
-                    "on-secondary-fixed-variant": "#6e3900",
-                    "primary-fixed-dim": "#95d4b3",
-                    "tertiary-fixed-dim": "#c2c9bb",
-                    "background": "#f8f9ff",
-                    "surface-bright": "#f8f9ff",
-                    "error-container": "#ffdad6",
-                    "tertiary-fixed": "#dee5d6",
-                    "tertiary": "#42493f",
-                    "on-error-container": "#93000a",
-                    "on-primary-fixed-variant": "#0e5138",
-                    "secondary-fixed": "#ffdcc3",
-                    "surface-container-low": "#eff4ff",
-                    "tertiary-container": "#5a6156"
+            colors: {
+              surface: "#f8f9ff",
+              "surface-container-high": "#dee9fc",
+              "on-surface-variant": "#404943",
+              "on-secondary": "#ffffff",
+              "on-primary-container": "#a8e7c5",
+              "inverse-on-surface": "#eaf1ff",
+              primary: "#0f5238",
+              "on-tertiary-container": "#d5dccd",
+              "surface-container-highest": "#d9e3f6",
+              "on-tertiary-fixed": "#171d14",
+              "inverse-surface": "#27313f",
+              "on-error": "#ffffff",
+              "secondary-fixed-dim": "#ffb77d",
+              secondary: "#904d00",
+              "surface-tint": "#2c694e",
+              "surface-container": "#e6eeff",
+              "primary-container": "#2d6a4f",
+              error: "#ba1a1a",
+              "surface-variant": "#d9e3f6",
+              "on-primary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-dim": "#d0dbed",
+              "inverse-primary": "#95d4b3",
+              "outline-variant": "#bfc9c1",
+              "on-background": "#121c2a",
+              "primary-fixed": "#b1f0ce",
+              "on-primary-fixed": "#002114",
+              "on-secondary-container": "#663500",
+              outline: "#707973",
+              "on-secondary-fixed": "#2f1500",
+              "on-tertiary-fixed-variant": "#42493e",
+              "secondary-container": "#fe932c",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#121c2a",
+              "on-secondary-fixed-variant": "#6e3900",
+              "primary-fixed-dim": "#95d4b3",
+              "tertiary-fixed-dim": "#c2c9bb",
+              background: "#f8f9ff",
+              "surface-bright": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "tertiary-fixed": "#dee5d6",
+              tertiary: "#42493f",
+              "on-error-container": "#93000a",
+              "on-primary-fixed-variant": "#0e5138",
+              "secondary-fixed": "#ffdcc3",
+              "surface-container-low": "#eff4ff",
+              "tertiary-container": "#5a6156",
             },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
             },
-            "spacing": {
-                    "base": "4px",
-                    "xs": "8px",
-                    "sm": "12px",
-                    "gutter": "12px",
-                    "lg": "24px",
-                    "md": "16px",
-                    "container-margin": "16px",
-                    "xl": "32px"
+            spacing: {
+              base: "4px",
+              xs: "8px",
+              sm: "12px",
+              gutter: "12px",
+              lg: "24px",
+              md: "16px",
+              "container-margin": "16px",
+              xl: "32px",
             },
-            "fontFamily": {
-                    "display": [
-                            "Plus Jakarta Sans"
-                    ],
-                    "h1": [
-                            "Plus Jakarta Sans"
-                    ],
-                    "body-lg": [
-                            "Plus Jakarta Sans"
-                    ],
-                    "h2": [
-                            "Plus Jakarta Sans"
-                    ],
-                    "body-md": [
-                            "Plus Jakarta Sans"
-                    ],
-                    "label-md": [
-                            "Plus Jakarta Sans"
-                    ],
-                    "button": [
-                            "Plus Jakarta Sans"
-                    ]
+            fontFamily: {
+              display: ["Plus Jakarta Sans"],
+              h1: ["Plus Jakarta Sans"],
+              "body-lg": ["Plus Jakarta Sans"],
+              h2: ["Plus Jakarta Sans"],
+              "body-md": ["Plus Jakarta Sans"],
+              "label-md": ["Plus Jakarta Sans"],
+              button: ["Plus Jakarta Sans"],
             },
-            "fontSize": {
-                    "display": [
-                            "32px",
-                            {
-                                    "lineHeight": "40px",
-                                    "letterSpacing": "-0.02em",
-                                    "fontWeight": "700"
-                            }
-                    ],
-                    "h1": [
-                            "24px",
-                            {
-                                    "lineHeight": "32px",
-                                    "fontWeight": "700"
-                            }
-                    ],
-                    "body-lg": [
-                            "16px",
-                            {
-                                    "lineHeight": "24px",
-                                    "fontWeight": "400"
-                            }
-                    ],
-                    "h2": [
-                            "20px",
-                            {
-                                    "lineHeight": "28px",
-                                    "fontWeight": "600"
-                            }
-                    ],
-                    "body-md": [
-                            "14px",
-                            {
-                                    "lineHeight": "20px",
-                                    "fontWeight": "400"
-                            }
-                    ],
-                    "label-md": [
-                            "12px",
-                            {
-                                    "lineHeight": "16px",
-                                    "fontWeight": "600"
-                            }
-                    ],
-                    "button": [
-                            "16px",
-                            {
-                                    "lineHeight": "24px",
-                                    "fontWeight": "600"
-                            }
-                    ]
-            }
-    },
+            fontSize: {
+              display: [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              h1: [
+                "24px",
+                {
+                  lineHeight: "32px",
+                  fontWeight: "700",
+                },
+              ],
+              "body-lg": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  fontWeight: "400",
+                },
+              ],
+              h2: [
+                "20px",
+                {
+                  lineHeight: "28px",
+                  fontWeight: "600",
+                },
+              ],
+              "body-md": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  fontWeight: "400",
+                },
+              ],
+              "label-md": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  fontWeight: "600",
+                },
+              ],
+              button: [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  fontWeight: "600",
+                },
+              ],
+            },
+          },
         },
-      }
+      };
     </script>
-<style>
-        body { background-color: theme('colors.background'); color: theme('colors.on-background'); font-family: 'Plus Jakarta Sans', sans-serif; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    <style>
+      body {
+        background-color: theme("colors.background");
+        color: theme("colors.on-background");
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
     </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
+    <style>
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
   </head>
-<body class="antialiased pb-24 pt-16 md:pt-20">
-<!-- TopAppBar -->
-<header class="fixed top-0 left-0 w-full flex justify-between items-center px-4 h-16 bg-emerald-50/90 dark:bg-stone-950/90 backdrop-blur-md shadow-sm border-b border-emerald-100 dark:border-stone-900 z-50">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-emerald-800 dark:text-emerald-400">agriculture</span>
-<span class="font-['Plus_Jakarta_Sans'] text-base font-semibold text-xl font-extrabold tracking-tight text-emerald-900 dark:text-emerald-50">Kissan</span>
-</div>
-<div class="flex items-center">
-<img alt="Farmer profile picture" class="w-8 h-8 rounded-full object-cover ring-2 ring-surface" data-alt="Close up portrait of a smiling middle aged man outdoors with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2nV1_kz5e_eTy9SgMGMK7T9jeHt8Zi5K25-unMjAfKUVjxDefZFzLCkeLDQtas3fp8VWyTUzN-8ydNXDePofLGs99sgmNsDhER_FxIWDIYjvNDK6J0Cnubdt9NfCHu8uJ6P_hWPhcvQ4KtNIlPL4c_gatSPhsoaat7dB3aDV5sSpOqLn6XuzS7kK_hr456g5C0pvEsmkaOF9BltrnGzIj-sMfDKGRTRB5-h3ozvOHfDRkqUB0HztKxirWkRhkEPcsmoa7YrURnQg"/>
-</div>
-</header>
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-<!-- Search Bar -->
-<div class="mb-lg relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-<input class="w-full h-12 pl-10 pr-4 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none font-body-md text-body-md text-on-surface placeholder:text-outline shadow-[0_4px_12px_rgba(44,105,78,0.05)]" placeholder="Search for fresh produce..." type="text"/>
-</div>
-<!-- Hero Carousel Banner -->
-<section class="mb-lg">
-<div class="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.05)]">
-<img alt="Fresh Organic Harvest Banner" class="absolute inset-0 w-full h-full object-cover" data-alt="Bountiful harvest of fresh organic vegetables including tomatoes, greens, and root vegetables in a rustic wooden crate with warm sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQU4J8uDi3awWc8AsOjutoJnwetltimABJh3b4THe8Xh3gUK5vpVkybUMWd2PdzmIUn17vlji3lUXJbYWJWtIce29T9zB2epmfmxgCb2ej-OkBK6tr7rtB-k7B_u-O3n2afJJyjQ33NZbrwMRRhfdgQxn74LEhcodkKbA_KCbNEdMoE_DyX_zYej_jX3hugPTAksBGfPxRYeDPn46YF_tgfBYd4eXur2LzD6SX6RLxWfrS01vQ7CLPAA5_dLZSBoOXDquoucSNL7Y"/>
-<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent flex flex-col justify-center px-6">
-<span class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-container font-label-md text-label-md rounded-full mb-2 w-max shadow-sm">Special Offer</span>
-<h2 class="font-display text-display text-on-primary mb-2 max-w-[200px] leading-tight">Fresh Organic Harvest</h2>
-<p class="font-body-lg text-body-lg text-on-primary/90 font-medium">20% Off All Greens</p>
-</div>
-</div>
-</section>
-<!-- Categories -->
-<section class="mb-lg">
-<div class="flex items-center justify-between mb-sm">
-<h3 class="font-h2 text-h2 text-on-surface">Categories</h3>
-<a class="font-button text-button text-primary hover:text-primary-container transition-colors" href="#">View All</a>
-</div>
-<div class="flex overflow-x-auto gap-3 hide-scrollbar pb-2">
-<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-full font-label-md text-label-md shrink-0 shadow-sm transition-transform active:scale-95">
-<span class="material-symbols-outlined text-[18px]">grass</span>
-                    Vegetables
+  <body class="antialiased pb-24 pt-16 md:pt-20">
+    <!-- TopAppBar -->
+    <header
+      class="fixed top-0 left-0 w-full flex justify-between items-center px-4 h-16 bg-emerald-50/90 dark:bg-stone-950/90 backdrop-blur-md shadow-sm border-b border-emerald-100 dark:border-stone-900 z-50"
+    >
+      <div class="flex items-center gap-2">
+        <span
+          class="material-symbols-outlined text-emerald-800 dark:text-emerald-400"
+          >agriculture</span
+        >
+        <span
+          class="font-['Plus_Jakarta_Sans'] text-base font-semibold text-xl font-extrabold tracking-tight text-emerald-900 dark:text-emerald-50"
+          >Kissan</span
+        >
+      </div>
+      <div class="flex items-center">
+        <img
+          alt="Farmer profile picture"
+          class="w-8 h-8 rounded-full object-cover ring-2 ring-surface"
+          data-alt="Close up portrait of a smiling middle aged man outdoors with soft natural lighting"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2nV1_kz5e_eTy9SgMGMK7T9jeHt8Zi5K25-unMjAfKUVjxDefZFzLCkeLDQtas3fp8VWyTUzN-8ydNXDePofLGs99sgmNsDhER_FxIWDIYjvNDK6J0Cnubdt9NfCHu8uJ6P_hWPhcvQ4KtNIlPL4c_gatSPhsoaat7dB3aDV5sSpOqLn6XuzS7kK_hr456g5C0pvEsmkaOF9BltrnGzIj-sMfDKGRTRB5-h3ozvOHfDRkqUB0HztKxirWkRhkEPcsmoa7YrURnQg"
+        />
+      </div>
+    </header>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      <!-- Search Bar -->
+      <div class="mb-lg relative">
+        <span
+          class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
+          >search</span
+        >
+        <input
+          class="w-full h-12 pl-10 pr-4 rounded-xl border border-outline-variant bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none font-body-md text-body-md text-on-surface placeholder:text-outline shadow-[0_4px_12px_rgba(44,105,78,0.05)]"
+          placeholder="Search for fresh produce..."
+          type="text"
+        />
+      </div>
+      <!-- Hero Carousel Banner -->
+      <section class="mb-lg">
+        <div
+          class="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.05)]"
+        >
+          <img
+            alt="Fresh Organic Harvest Banner"
+            class="absolute inset-0 w-full h-full object-cover"
+            data-alt="Bountiful harvest of fresh organic vegetables including tomatoes, greens, and root vegetables in a rustic wooden crate with warm sunlight"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQU4J8uDi3awWc8AsOjutoJnwetltimABJh3b4THe8Xh3gUK5vpVkybUMWd2PdzmIUn17vlji3lUXJbYWJWtIce29T9zB2epmfmxgCb2ej-OkBK6tr7rtB-k7B_u-O3n2afJJyjQ33NZbrwMRRhfdgQxn74LEhcodkKbA_KCbNEdMoE_DyX_zYej_jX3hugPTAksBGfPxRYeDPn46YF_tgfBYd4eXur2LzD6SX6RLxWfrS01vQ7CLPAA5_dLZSBoOXDquoucSNL7Y"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent flex flex-col justify-center px-6"
+          >
+            <span
+              class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-container font-label-md text-label-md rounded-full mb-2 w-max shadow-sm"
+              >Special Offer</span
+            >
+            <h2
+              class="font-display text-display text-on-primary mb-2 max-w-[200px] leading-tight"
+            >
+              Fresh Organic Harvest
+            </h2>
+            <p class="font-body-lg text-body-lg text-on-primary/90 font-medium">
+              20% Off All Greens
+            </p>
+          </div>
+        </div>
+      </section>
+      <!-- Categories -->
+      <section class="mb-lg">
+        <div class="flex items-center justify-between mb-sm">
+          <h3 class="font-h2 text-h2 text-on-surface">Categories</h3>
+          <a
+            class="font-button text-button text-primary hover:text-primary-container transition-colors"
+            href="#"
+            >View All</a
+          >
+        </div>
+        <div class="flex overflow-x-auto gap-3 hide-scrollbar pb-2">
+          <button
+            class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-full font-label-md text-label-md shrink-0 shadow-sm transition-transform active:scale-95"
+          >
+            <span class="material-symbols-outlined text-[18px]">grass</span>
+            Vegetables
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-full font-label-md text-label-md shrink-0 hover:bg-surface-container transition-colors active:scale-95"
+          >
+            <span class="material-symbols-outlined text-[18px]">nutrition</span>
+            Fruits
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-full font-label-md text-label-md shrink-0 hover:bg-surface-container transition-colors active:scale-95"
+          >
+            <span class="material-symbols-outlined text-[18px]">grain</span>
+            Grains
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-full font-label-md text-label-md shrink-0 hover:bg-surface-container transition-colors active:scale-95"
+          >
+            <span class="material-symbols-outlined text-[18px]">egg</span>
+            Dairy &amp; Eggs
+          </button>
+        </div>
+      </section>
+      <!-- Latest Produce Grid -->
+      <section>
+        <div class="flex items-center justify-between mb-sm">
+          <h3 class="font-h2 text-h2 text-on-surface">Latest Produce</h3>
+          <span
+            class="font-body-md text-body-md text-outline flex items-center gap-1 cursor-pointer hover:text-on-surface transition-colors"
+          >
+            Filter
+            <span class="material-symbols-outlined text-[18px]">tune</span>
+          </span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <!-- Product Card 1 -->
+          <article
+            class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative"
+          >
+            <div
+              class="absolute top-2 left-2 z-10 px-2 py-0.5 bg-tertiary-container/20 text-on-surface font-label-md text-[10px] uppercase rounded-full backdrop-blur-sm"
+            >
+              Organic
+            </div>
+            <div class="aspect-square bg-surface-container overflow-hidden">
+              <img
+                alt="Fresh Red Tomatoes"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                data-alt="Close up of bright red ripe tomatoes on the vine with water droplets on a dark background"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3l6Bl-Pb0UAYOimYiR-nAhZ-B-NdxJzTPO4gLcEl4jxuoIEZol2MLrMM_2RsuFDlOr42MWr4ElQJiiKoRjXgQfZLBh08XA3G1dcaMPb_7y7ElCOs8AvxCg7zcuZtKIbPN2tJVNGfYNh9YY5V6jcDqfthM7XjAm2e8iiulG3AOaJ3B9iYEtUacM92qJvCYD8sa8Rmp4O3PLHFbvcGECP6EhHxr5ObqbF99fYBMoZxPlGViAIuzwgivfUIb6DwDXyRpxgNCSCoYi-8"
+              />
+            </div>
+            <div class="p-3 flex flex-col grow">
+              <h4
+                class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate"
+              >
+                Vine Tomatoes
+              </h4>
+              <p class="font-body-md text-body-md text-outline mb-2 text-sm">
+                Farm: Green Acres
+              </p>
+              <div class="mt-auto flex items-center justify-between">
+                <span class="font-button text-button text-primary"
+                  >₹40<span class="text-xs font-normal text-outline"
+                    >/kg</span
+                  ></span
+                >
+                <button
+                  aria-label="Add to cart"
+                  class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90"
+                >
+                  <span
+                    class="material-symbols-outlined text-[20px]"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >add</span
+                  >
                 </button>
-<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-full font-label-md text-label-md shrink-0 hover:bg-surface-container transition-colors active:scale-95">
-<span class="material-symbols-outlined text-[18px]">nutrition</span>
-                    Fruits
+              </div>
+            </div>
+          </article>
+          <!-- Product Card 2 -->
+          <article
+            class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative"
+          >
+            <div class="aspect-square bg-surface-container overflow-hidden">
+              <img
+                alt="Fresh Green Spinach"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                data-alt="Bundle of fresh vibrant green spinach leaves tied together on a rustic wooden table"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBah7jRCapEk6zGq5DVFAhoLz0SbYpweej9ioYZfVEGsoOOyrTwCpUUhEl9I-R124_TudtcklDM8i9ISZ37SL6qBKsvhO3r2X9NYypg_KzJ7QJYOakzgMUWYl3xR310Qn-RmsZh0JZ_RkgVbDYT3tI4qyir5X3RsnVnCPcsJKL7qqQB-B-tEtaspyvKzUBWTGXYa_4juWXvFQGJf9CIo-BHfhKsABq__7YvufqDYBHPSVleDgaPuZrJsskluQW44m8WZ1-shfV1ZwA"
+              />
+            </div>
+            <div class="p-3 flex flex-col grow">
+              <h4
+                class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate"
+              >
+                Fresh Spinach
+              </h4>
+              <p class="font-body-md text-body-md text-outline mb-2 text-sm">
+                Farm: Valley Organics
+              </p>
+              <div class="mt-auto flex items-center justify-between">
+                <span class="font-button text-button text-primary"
+                  >₹25<span class="text-xs font-normal text-outline"
+                    >/bunch</span
+                  ></span
+                >
+                <button
+                  aria-label="Add to cart"
+                  class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90"
+                >
+                  <span
+                    class="material-symbols-outlined text-[20px]"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >add</span
+                  >
                 </button>
-<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-full font-label-md text-label-md shrink-0 hover:bg-surface-container transition-colors active:scale-95">
-<span class="material-symbols-outlined text-[18px]">grain</span>
-                    Grains
+              </div>
+            </div>
+          </article>
+          <!-- Product Card 3 -->
+          <article
+            class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative"
+          >
+            <div
+              class="absolute top-2 left-2 z-10 px-2 py-0.5 bg-secondary-container/80 text-on-secondary-container font-label-md text-[10px] uppercase rounded-full backdrop-blur-sm"
+            >
+              Trending
+            </div>
+            <div class="aspect-square bg-surface-container overflow-hidden">
+              <img
+                alt="Premium Basmati Rice"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                data-alt="Wooden bowl filled with raw white basmati rice grains with soft lighting"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoImXN6AJ0nMxXBDwqktUezn8ca1VAU6SNmN32lsZDY3KjXsb3hgEa5ofZUQqGKczWS7AXaAoDx7Wlwc3KmoYJkiHYHHjNbEJzTVUgv27PcX1H9eavxDN4VpefYrpgMoX7-yu1risL3l7SvxckHWXVD1aBx9otq6xN69DT3iUpLX0cwBF-3D2gSFVQ3dlbzISAHe-EbclGI68aoQyRZQA3se-McGBUXTdhk_AjR3GYwtGUsiTzqkH-tSARue9oqMyEmk0cvHPHE0Q"
+              />
+            </div>
+            <div class="p-3 flex flex-col grow">
+              <h4
+                class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate"
+              >
+                Basmati Rice
+              </h4>
+              <p class="font-body-md text-body-md text-outline mb-2 text-sm">
+                Farm: Punjab Mills
+              </p>
+              <div class="mt-auto flex items-center justify-between">
+                <span class="font-button text-button text-primary"
+                  >₹110<span class="text-xs font-normal text-outline"
+                    >/kg</span
+                  ></span
+                >
+                <button
+                  aria-label="Add to cart"
+                  class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90"
+                >
+                  <span
+                    class="material-symbols-outlined text-[20px]"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >add</span
+                  >
                 </button>
-<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-full font-label-md text-label-md shrink-0 hover:bg-surface-container transition-colors active:scale-95">
-<span class="material-symbols-outlined text-[18px]">egg</span>
-                    Dairy &amp; Eggs
+              </div>
+            </div>
+          </article>
+          <!-- Product Card 4 -->
+          <article
+            class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative"
+          >
+            <div
+              class="absolute top-2 left-2 z-10 px-2 py-0.5 bg-tertiary-container/20 text-on-surface font-label-md text-[10px] uppercase rounded-full backdrop-blur-sm"
+            >
+              Organic
+            </div>
+            <div class="aspect-square bg-surface-container overflow-hidden">
+              <img
+                alt="Fresh Carrots"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                data-alt="Bunch of freshly harvested orange carrots with green tops lying on soil"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWdzuokHLl0xlXxWTypv1L4iYc70G2wWlGWW3TbhFr4R3caKyOvmZhvsJ3oSn-bUuxK896Mlub4x_gtmAfrxDOxAHgJWDcoAakmcvNBTgbqXE5-H6N7JxFEYoUNmWVrTTt5aqjb_MAoYr72YFz1YK7kcEu7QY_JpOlvqqDrzrrxPXlALkqAxO5RJtSz3KxjexbTXKhQL3hArtfaPiyKW1qCcUtroLAITXAEaadS7pDeYKTNbp6KygGG_uLljBTp3c7WGQXm3cX__U"
+              />
+            </div>
+            <div class="p-3 flex flex-col grow">
+              <h4
+                class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate"
+              >
+                Sweet Carrots
+              </h4>
+              <p class="font-body-md text-body-md text-outline mb-2 text-sm">
+                Farm: Root &amp; Stem
+              </p>
+              <div class="mt-auto flex items-center justify-between">
+                <span class="font-button text-button text-primary"
+                  >₹60<span class="text-xs font-normal text-outline"
+                    >/kg</span
+                  ></span
+                >
+                <button
+                  aria-label="Add to cart"
+                  class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90"
+                >
+                  <span
+                    class="material-symbols-outlined text-[20px]"
+                    style="font-variation-settings: &quot;FILL&quot; 1"
+                    >add</span
+                  >
                 </button>
-</div>
-</section>
-<!-- Latest Produce Grid -->
-<section>
-<div class="flex items-center justify-between mb-sm">
-<h3 class="font-h2 text-h2 text-on-surface">Latest Produce</h3>
-<span class="font-body-md text-body-md text-outline flex items-center gap-1 cursor-pointer hover:text-on-surface transition-colors">
-                    Filter <span class="material-symbols-outlined text-[18px]">tune</span>
-</span>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-<!-- Product Card 1 -->
-<article class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative">
-<div class="absolute top-2 left-2 z-10 px-2 py-0.5 bg-tertiary-container/20 text-on-surface font-label-md text-[10px] uppercase rounded-full backdrop-blur-sm">Organic</div>
-<div class="aspect-square bg-surface-container overflow-hidden">
-<img alt="Fresh Red Tomatoes" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close up of bright red ripe tomatoes on the vine with water droplets on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3l6Bl-Pb0UAYOimYiR-nAhZ-B-NdxJzTPO4gLcEl4jxuoIEZol2MLrMM_2RsuFDlOr42MWr4ElQJiiKoRjXgQfZLBh08XA3G1dcaMPb_7y7ElCOs8AvxCg7zcuZtKIbPN2tJVNGfYNh9YY5V6jcDqfthM7XjAm2e8iiulG3AOaJ3B9iYEtUacM92qJvCYD8sa8Rmp4O3PLHFbvcGECP6EhHxr5ObqbF99fYBMoZxPlGViAIuzwgivfUIb6DwDXyRpxgNCSCoYi-8"/>
-</div>
-<div class="p-3 flex flex-col grow">
-<h4 class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate">Vine Tomatoes</h4>
-<p class="font-body-md text-body-md text-outline mb-2 text-sm">Farm: Green Acres</p>
-<div class="mt-auto flex items-center justify-between">
-<span class="font-button text-button text-primary">₹40<span class="text-xs font-normal text-outline">/kg</span></span>
-<button aria-label="Add to cart" class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add</span>
-</button>
-</div>
-</div>
-</article>
-<!-- Product Card 2 -->
-<article class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative">
-<div class="aspect-square bg-surface-container overflow-hidden">
-<img alt="Fresh Green Spinach" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Bundle of fresh vibrant green spinach leaves tied together on a rustic wooden table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBah7jRCapEk6zGq5DVFAhoLz0SbYpweej9ioYZfVEGsoOOyrTwCpUUhEl9I-R124_TudtcklDM8i9ISZ37SL6qBKsvhO3r2X9NYypg_KzJ7QJYOakzgMUWYl3xR310Qn-RmsZh0JZ_RkgVbDYT3tI4qyir5X3RsnVnCPcsJKL7qqQB-B-tEtaspyvKzUBWTGXYa_4juWXvFQGJf9CIo-BHfhKsABq__7YvufqDYBHPSVleDgaPuZrJsskluQW44m8WZ1-shfV1ZwA"/>
-</div>
-<div class="p-3 flex flex-col grow">
-<h4 class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate">Fresh Spinach</h4>
-<p class="font-body-md text-body-md text-outline mb-2 text-sm">Farm: Valley Organics</p>
-<div class="mt-auto flex items-center justify-between">
-<span class="font-button text-button text-primary">₹25<span class="text-xs font-normal text-outline">/bunch</span></span>
-<button aria-label="Add to cart" class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add</span>
-</button>
-</div>
-</div>
-</article>
-<!-- Product Card 3 -->
-<article class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative">
-<div class="absolute top-2 left-2 z-10 px-2 py-0.5 bg-secondary-container/80 text-on-secondary-container font-label-md text-[10px] uppercase rounded-full backdrop-blur-sm">Trending</div>
-<div class="aspect-square bg-surface-container overflow-hidden">
-<img alt="Premium Basmati Rice" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Wooden bowl filled with raw white basmati rice grains with soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoImXN6AJ0nMxXBDwqktUezn8ca1VAU6SNmN32lsZDY3KjXsb3hgEa5ofZUQqGKczWS7AXaAoDx7Wlwc3KmoYJkiHYHHjNbEJzTVUgv27PcX1H9eavxDN4VpefYrpgMoX7-yu1risL3l7SvxckHWXVD1aBx9otq6xN69DT3iUpLX0cwBF-3D2gSFVQ3dlbzISAHe-EbclGI68aoQyRZQA3se-McGBUXTdhk_AjR3GYwtGUsiTzqkH-tSARue9oqMyEmk0cvHPHE0Q"/>
-</div>
-<div class="p-3 flex flex-col grow">
-<h4 class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate">Basmati Rice</h4>
-<p class="font-body-md text-body-md text-outline mb-2 text-sm">Farm: Punjab Mills</p>
-<div class="mt-auto flex items-center justify-between">
-<span class="font-button text-button text-primary">₹110<span class="text-xs font-normal text-outline">/kg</span></span>
-<button aria-label="Add to cart" class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add</span>
-</button>
-</div>
-</div>
-</article>
-<!-- Product Card 4 -->
-<article class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden shadow-[0_4px_12px_rgba(44,105,78,0.03)] hover:shadow-[0_8px_24px_rgba(44,105,78,0.08)] transition-all flex flex-col group relative">
-<div class="absolute top-2 left-2 z-10 px-2 py-0.5 bg-tertiary-container/20 text-on-surface font-label-md text-[10px] uppercase rounded-full backdrop-blur-sm">Organic</div>
-<div class="aspect-square bg-surface-container overflow-hidden">
-<img alt="Fresh Carrots" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Bunch of freshly harvested orange carrots with green tops lying on soil" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWdzuokHLl0xlXxWTypv1L4iYc70G2wWlGWW3TbhFr4R3caKyOvmZhvsJ3oSn-bUuxK896Mlub4x_gtmAfrxDOxAHgJWDcoAakmcvNBTgbqXE5-H6N7JxFEYoUNmWVrTTt5aqjb_MAoYr72YFz1YK7kcEu7QY_JpOlvqqDrzrrxPXlALkqAxO5RJtSz3KxjexbTXKhQL3hArtfaPiyKW1qCcUtroLAITXAEaadS7pDeYKTNbp6KygGG_uLljBTp3c7WGQXm3cX__U"/>
-</div>
-<div class="p-3 flex flex-col grow">
-<h4 class="font-body-lg text-body-lg font-medium text-on-surface mb-1 truncate">Sweet Carrots</h4>
-<p class="font-body-md text-body-md text-outline mb-2 text-sm">Farm: Root &amp; Stem</p>
-<div class="mt-auto flex items-center justify-between">
-<span class="font-button text-button text-primary">₹60<span class="text-xs font-normal text-outline">/kg</span></span>
-<button aria-label="Add to cart" class="w-8 h-8 rounded-full bg-surface-container-high text-primary flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors active:scale-90">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add</span>
-</button>
-</div>
-</div>
-</article>
-</div>
-</section>
-</main>
-<!-- BottomNavBar -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-6 bg-white dark:bg-stone-950 border-t border-emerald-50 dark:border-stone-900 rounded-t-2xl shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
-<a class="flex flex-col items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-100 rounded-2xl px-5 py-1.5 active:scale-90 transition-all duration-200 ease-out" href="#">
-<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
-<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium">Home</span>
-</a>
-<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out" href="#">
-<span class="material-symbols-outlined mb-1">shopping_basket</span>
-<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium">Products</span>
-</a>
-<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out" href="#">
-<span class="material-symbols-outlined mb-1">receipt_long</span>
-<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium">Orders</span>
-</a>
-<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out" href="#">
-<span class="material-symbols-outlined mb-1">person</span>
-<span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium">Profile</span>
-</a>
-</nav>
-</body></html>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+      class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-2 pb-6 bg-white dark:bg-stone-950 border-t border-emerald-50 dark:border-stone-900 rounded-t-2xl shadow-[0_-4px_12px_rgba(0,0,0,0.05)]"
+    >
+      <a
+        class="flex flex-col items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-100 rounded-2xl px-5 py-1.5 active:scale-90 transition-all duration-200 ease-out"
+        href="#"
+      >
+        <span
+          class="material-symbols-outlined mb-1"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+          >home</span
+        >
+        <span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium"
+          >Home</span
+        >
+      </a>
+      <a
+        class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out"
+        href="#"
+      >
+        <span class="material-symbols-outlined mb-1">shopping_basket</span>
+        <span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium"
+          >Products</span
+        >
+      </a>
+      <a
+        class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out"
+        href="#"
+      >
+        <span class="material-symbols-outlined mb-1">receipt_long</span>
+        <span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium"
+          >Orders</span
+        >
+      </a>
+      <a
+        class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out"
+        href="#"
+      >
+        <span class="material-symbols-outlined mb-1">person</span>
+        <span class="font-['Plus_Jakarta_Sans'] text-[11px] font-medium"
+          >Profile</span
+        >
+      </a>
+    </nav>
+  </body>
+</html>

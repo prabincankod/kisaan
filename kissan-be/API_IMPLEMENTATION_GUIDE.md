@@ -11,15 +11,15 @@
 
 ## Base Paths
 
-| Prefix | Description |
-|--------|-------------|
-| `/api/auth` | Authentication |
-| `/api/products` | Products |
-| `/api/categories` | Categories |
-| `/api/cart` | Shopping Cart |
-| `/api/quotations` | Quotations |
-| `/api/orders` | Orders |
-| `/api/stats` | Statistics |
+| Prefix            | Description    |
+| ----------------- | -------------- |
+| `/api/auth`       | Authentication |
+| `/api/products`   | Products       |
+| `/api/categories` | Categories     |
+| `/api/cart`       | Shopping Cart  |
+| `/api/quotations` | Quotations     |
+| `/api/orders`     | Orders         |
+| `/api/stats`      | Statistics     |
 
 ---
 
@@ -66,6 +66,7 @@ Register a new user (farmer or buyer).
 **Auth**: No
 
 **Request**:
+
 ```json
 {
   "name": "string (min 2)",
@@ -78,6 +79,7 @@ Register a new user (farmer or buyer).
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -103,6 +105,7 @@ Login and get JWT token.
 **Auth**: No
 
 **Request**:
+
 ```json
 {
   "email": "string",
@@ -111,6 +114,7 @@ Login and get JWT token.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -136,6 +140,7 @@ Get current user profile.
 **Auth**: Yes
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -172,6 +177,7 @@ Get all products with pagination and filters.
 | isActive | boolean | - | Filter by active status |
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -203,6 +209,7 @@ Get farmer's own products.
 | limit | number | 20 | Items per page |
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -222,6 +229,7 @@ Get product by ID.
 **Auth**: No
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -266,6 +274,7 @@ Create new product.
 | images | files | Product images (max 5) |
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -284,6 +293,7 @@ Update product.
 **Role**: farmer
 
 **Request**:
+
 ```json
 {
   "title": "string (optional)",
@@ -298,6 +308,7 @@ Update product.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -316,6 +327,7 @@ Soft delete product.
 **Role**: farmer
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -338,6 +350,7 @@ Upload product images.
 | images | files | Product images (max 5) |
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -357,6 +370,7 @@ Get all categories with product count.
 **Auth**: No
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -380,6 +394,7 @@ Create new category.
 **Role**: farmer
 
 **Request**:
+
 ```json
 {
   "name": "string (required, max 100)"
@@ -387,6 +402,7 @@ Create new category.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -410,6 +426,7 @@ Get user's cart with items.
 **Role**: buyer
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -433,6 +450,7 @@ Add item to cart.
 **Role**: buyer
 
 **Request**:
+
 ```json
 {
   "productId": "number",
@@ -441,6 +459,7 @@ Add item to cart.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -462,6 +481,7 @@ Update cart item quantity.
 **Role**: buyer
 
 **Request**:
+
 ```json
 {
   "quantity": "number"
@@ -469,6 +489,7 @@ Update cart item quantity.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -487,6 +508,7 @@ Remove item from cart.
 **Role**: buyer
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -504,6 +526,7 @@ Clear entire cart.
 **Role**: buyer
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -529,6 +552,7 @@ Get orders. Buyer gets own orders, farmer gets own orders.
 | status | string | - | Filter by status (`pending`, `confirmed`, `shipped`, `delivered`) |
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -548,6 +572,7 @@ Get order by ID.
 **Auth**: Yes
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -577,6 +602,7 @@ Create order from cart.
 **Role**: buyer
 
 **Request**:
+
 ```json
 {
   "shippingAddress": "string (optional)"
@@ -584,6 +610,7 @@ Create order from cart.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -613,6 +640,7 @@ Update order status.
 **Role**: farmer
 
 **Request**:
+
 ```json
 {
   "status": "pending | confirmed | shipped | delivered"
@@ -620,6 +648,7 @@ Update order status.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -646,6 +675,7 @@ Get quotations.
 | status | string | - | Filter by status (`pending`, `accepted`, `rejected`) |
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -665,6 +695,7 @@ Get quotation by ID.
 **Auth**: Yes
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -690,6 +721,7 @@ Create quotation request.
 **Role**: buyer
 
 **Request**:
+
 ```json
 {
   "farmerId": "number",
@@ -704,6 +736,7 @@ Create quotation request.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -729,6 +762,7 @@ Update quotation status.
 **Role**: farmer
 
 **Request**:
+
 ```json
 {
   "status": "pending | accepted | rejected"
@@ -738,6 +772,7 @@ Update quotation status.
 **Note**: When farmer accepts quotation, it automatically creates an order.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -757,6 +792,7 @@ Get user statistics.
 **Auth**: Yes
 
 **Response (Farmer)**:
+
 ```json
 {
   "success": true,
@@ -769,6 +805,7 @@ Get user statistics.
 ```
 
 **Response (Buyer)**:
+
 ```json
 {
   "success": true,
@@ -785,110 +822,121 @@ Get user statistics.
 # Database Models
 
 ## User
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| name | String | User name |
-| email | String (unique) | Email address |
-| password | String | Hashed password |
-| role | Enum | `farmer` or `buyer` |
-| phone | String? | Phone number |
-| address | String? | Address |
-| createdAt | DateTime | Creation timestamp |
-| updatedAt | DateTime | Update timestamp |
+
+| Field     | Type            | Description         |
+| --------- | --------------- | ------------------- |
+| id        | Int (PK)        | Auto-increment      |
+| name      | String          | User name           |
+| email     | String (unique) | Email address       |
+| password  | String          | Hashed password     |
+| role      | Enum            | `farmer` or `buyer` |
+| phone     | String?         | Phone number        |
+| address   | String?         | Address             |
+| createdAt | DateTime        | Creation timestamp  |
+| updatedAt | DateTime        | Update timestamp    |
 
 ## Product
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| title | String | Product title |
-| description | String? | Product description |
-| nutritionalInfo | String? | Nutritional information |
-| unit | Enum | `kg` or `pcs` |
-| price | Float | Price per unit |
-| quantityAvailable | Int | Available quantity |
-| isActive | Boolean | Active status |
-| isDeleted | Boolean | Soft delete flag |
-| farmerId | Int (FK) | Reference to User |
-| createdAt | DateTime | Creation timestamp |
-| updatedAt | DateTime | Update timestamp |
+
+| Field             | Type     | Description             |
+| ----------------- | -------- | ----------------------- |
+| id                | Int (PK) | Auto-increment          |
+| title             | String   | Product title           |
+| description       | String?  | Product description     |
+| nutritionalInfo   | String?  | Nutritional information |
+| unit              | Enum     | `kg` or `pcs`           |
+| price             | Float    | Price per unit          |
+| quantityAvailable | Int      | Available quantity      |
+| isActive          | Boolean  | Active status           |
+| isDeleted         | Boolean  | Soft delete flag        |
+| farmerId          | Int (FK) | Reference to User       |
+| createdAt         | DateTime | Creation timestamp      |
+| updatedAt         | DateTime | Update timestamp        |
 
 ## ProductImage
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| url | String | Image URL |
+
+| Field     | Type     | Description          |
+| --------- | -------- | -------------------- |
+| id        | Int (PK) | Auto-increment       |
+| url       | String   | Image URL            |
 | productId | Int (FK) | Reference to Product |
 
 ## Category
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| name | String (unique) | Category name |
+
+| Field | Type            | Description    |
+| ----- | --------------- | -------------- |
+| id    | Int (PK)        | Auto-increment |
+| name  | String (unique) | Category name  |
 
 ## ProductCategory
-| Field | Type | Description |
-|-------|------|-------------|
-| productId | Int (FK) | Reference to Product |
+
+| Field      | Type     | Description           |
+| ---------- | -------- | --------------------- |
+| productId  | Int (FK) | Reference to Product  |
 | categoryId | Int (FK) | Reference to Category |
 
 ## Cart
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| userId | Int (FK) | Reference to User (buyer) |
-| farmerId | Int (FK) | Reference to User (farmer) |
-| createdAt | DateTime | Creation timestamp |
-| updatedAt | DateTime | Update timestamp |
+
+| Field     | Type     | Description                |
+| --------- | -------- | -------------------------- |
+| id        | Int (PK) | Auto-increment             |
+| userId    | Int (FK) | Reference to User (buyer)  |
+| farmerId  | Int (FK) | Reference to User (farmer) |
+| createdAt | DateTime | Creation timestamp         |
+| updatedAt | DateTime | Update timestamp           |
 
 ## CartItem
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| quantity | Int | Item quantity |
-| cartId | Int (FK) | Reference to Cart |
+
+| Field     | Type     | Description          |
+| --------- | -------- | -------------------- |
+| id        | Int (PK) | Auto-increment       |
+| quantity  | Int      | Item quantity        |
+| cartId    | Int (FK) | Reference to Cart    |
 | productId | Int (FK) | Reference to Product |
 
 ## Quotation
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| status | Enum | `pending`, `accepted`, `rejected` |
-| userId | Int (FK) | Reference to User (buyer) |
-| farmerId | Int (FK) | Reference to User (farmer) |
-| createdAt | DateTime | Creation timestamp |
-| updatedAt | DateTime | Update timestamp |
+
+| Field     | Type     | Description                       |
+| --------- | -------- | --------------------------------- |
+| id        | Int (PK) | Auto-increment                    |
+| status    | Enum     | `pending`, `accepted`, `rejected` |
+| userId    | Int (FK) | Reference to User (buyer)         |
+| farmerId  | Int (FK) | Reference to User (farmer)        |
+| createdAt | DateTime | Creation timestamp                |
+| updatedAt | DateTime | Update timestamp                  |
 
 ## QuotationItem
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| quantity | Int | Item quantity |
-| offeredPrice | Float | Offered price |
-| quotationId | Int (FK) | Reference to Quotation |
-| productId | Int (FK) | Reference to Product |
+
+| Field        | Type     | Description            |
+| ------------ | -------- | ---------------------- |
+| id           | Int (PK) | Auto-increment         |
+| quantity     | Int      | Item quantity          |
+| offeredPrice | Float    | Offered price          |
+| quotationId  | Int (FK) | Reference to Quotation |
+| productId    | Int (FK) | Reference to Product   |
 
 ## Order
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| totalAmount | Float | Total order amount |
-| status | Enum | `pending`, `confirmed`, `shipped`, `delivered` |
-| source | Enum | `cart` or `quotation` |
-| paymentStatus | String | Payment status |
-| shippingAddress | String? | Shipping address |
-| userId | Int (FK) | Reference to User (buyer) |
-| farmerId | Int (FK) | Reference to User (farmer) |
-| createdAt | DateTime | Creation timestamp |
-| updatedAt | DateTime | Update timestamp |
+
+| Field           | Type     | Description                                    |
+| --------------- | -------- | ---------------------------------------------- |
+| id              | Int (PK) | Auto-increment                                 |
+| totalAmount     | Float    | Total order amount                             |
+| status          | Enum     | `pending`, `confirmed`, `shipped`, `delivered` |
+| source          | Enum     | `cart` or `quotation`                          |
+| paymentStatus   | String   | Payment status                                 |
+| shippingAddress | String?  | Shipping address                               |
+| userId          | Int (FK) | Reference to User (buyer)                      |
+| farmerId        | Int (FK) | Reference to User (farmer)                     |
+| createdAt       | DateTime | Creation timestamp                             |
+| updatedAt       | DateTime | Update timestamp                               |
 
 ## OrderItem
-| Field | Type | Description |
-|-------|------|-------------|
-| id | Int (PK) | Auto-increment |
-| quantity | Int | Item quantity |
-| price | Float | Item price |
-| orderId | Int (FK) | Reference to Order |
+
+| Field     | Type     | Description          |
+| --------- | -------- | -------------------- |
+| id        | Int (PK) | Auto-increment       |
+| quantity  | Int      | Item quantity        |
+| price     | Float    | Item price           |
+| orderId   | Int (FK) | Reference to Order   |
 | productId | Int (FK) | Reference to Product |
 
 ---

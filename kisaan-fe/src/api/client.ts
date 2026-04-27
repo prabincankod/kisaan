@@ -1,7 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import * as SecureStore from "expo-secure-store";
 
-const BASE_URL = "https://ai.prasuco.com/api";
+export const BACKEND_URL = "https://ai.prasuco.com";
+const BASE_URL = `${BACKEND_URL}/api`;
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -21,7 +22,11 @@ api.interceptors.request.use(async (config) => {
 
 api.interceptors.response.use(
   (response: AxiosResponse) => {
-    if (response.data && response.data.success && response.data.data !== undefined) {
+    if (
+      response.data &&
+      response.data.success &&
+      response.data.data !== undefined
+    ) {
       response.data = response.data.data;
     }
     return response;
@@ -33,7 +38,7 @@ api.interceptors.response.use(
       error.message = error.response.data.error;
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

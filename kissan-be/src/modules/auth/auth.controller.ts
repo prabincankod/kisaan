@@ -1,17 +1,20 @@
-import { Response } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import prisma from '../../utils/prisma.js';
-import { successResponse, errorResponse } from '../../utils/response.js';
-import { AuthenticatedRequest } from '../../types/index.js';
+import { Response } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import prisma from "../../utils/prisma.js";
+import { successResponse, errorResponse } from "../../utils/response.js";
+import { AuthenticatedRequest } from "../../types/index.js";
 
-const register = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+const register = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   try {
     const { name, email, password, role, phone, address } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      res.status(400).json(errorResponse('Email already exists'));
+      res.status(400).json(errorResponse("Email already exists"));
       return;
     }
 
@@ -37,39 +40,55 @@ const register = async (req: AuthenticatedRequest, res: Response): Promise<void>
       },
     });
 
-    res.status(201).json(successResponse(user, 'Registration successful'));
+    res.status(201).json(successResponse(user, "Registration successful"));
   } catch (error) {
-    console.error('Register error:', error);
-    res.status(500).json(errorResponse('Registration failed'));
+    console.error("Register error:", error);
+    res.status(500).json(errorResponse("Registration failed"));
   }
 };
 
-const login = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+const login = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   try {
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      res.status(401).json(errorResponse('Invalid credentials'));
+      res.status(401).json(errorResponse("Invalid credentials"));
       return;
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      res.status(401).json(errorResponse('Invalid credentials'));
+      res.status(401).json(errorResponse("Invalid credentials"));
       return;
     }
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '7d' }
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "7d" },
     );
 
-    res.json(successResponse({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } }, 'Login successful'));
+    res.json(
+      successResponse(
+        {
+          token,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          },
+        },
+        "Login successful",
+      ),
+    );
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json(errorResponse('Login failed'));
+    console.error("Login error:", error);
+    res.status(500).json(errorResponse("Login failed"));
   }
 };
 
@@ -89,14 +108,14 @@ const me = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     });
 
     if (!user) {
-      res.status(404).json(errorResponse('User not found'));
+      res.status(404).json(errorResponse("User not found"));
       return;
     }
 
     res.json(successResponse(user));
   } catch (error) {
-    console.error('Get profile error:', error);
-    res.status(500).json(errorResponse('Failed to get profile'));
+    console.error("Get profile error:", error);
+    res.status(500).json(errorResponse("Failed to get profile"));
   }
 };
 

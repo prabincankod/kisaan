@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const registerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
-  role: z.enum(['farmer', 'buyer']),
+  role: z.enum(["farmer", "buyer"]),
   phone: z.string().optional(),
   address: z.string().optional(),
 });

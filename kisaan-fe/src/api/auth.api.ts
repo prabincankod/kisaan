@@ -30,10 +30,16 @@ export interface AuthResponse {
 }
 
 export const login = (params: LoginParams) =>
-  api.post<{ success: boolean; data: AuthResponse; message: string }>("/auth/login", params);
+  api.post<{ success: boolean; data: AuthResponse; message: string }>(
+    "/auth/login",
+    params,
+  );
 
 export const register = (params: RegisterParams) =>
-  api.post<{ success: boolean; data: User; message: string }>("/auth/register", params);
+  api.post<{ success: boolean; data: User; message: string }>(
+    "/auth/register",
+    params,
+  );
 
 export const getMe = () =>
   api.get<{ success: boolean; data: User }>("/auth/me");

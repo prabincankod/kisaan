@@ -1,11 +1,11 @@
 # 🧾 1. Updated Tech Stack
 
-* **Node.js + Express + TypeScript**
-* **MySQL (InnoDB)**
-* ORM: **Prisma** (recommended) or Sequelize
-* JWT Auth
-* Multer (file upload)
-* Swagger (OpenAPI)
+- **Node.js + Express + TypeScript**
+- **MySQL (InnoDB)**
+- ORM: **Prisma** (recommended) or Sequelize
+- JWT Auth
+- Multer (file upload)
+- Swagger (OpenAPI)
 
 👉 I’ll use **Prisma-style schema** (clean + scalable)
 
@@ -227,8 +227,8 @@ const upload = multer({
     destination: "uploads/",
     filename: (_, file, cb) => {
       cb(null, Date.now() + "-" + file.originalname);
-    }
-  })
+    },
+  }),
 });
 ```
 
@@ -313,23 +313,23 @@ if (status === "accepted") {
 
 # 🚀 9. Performance Considerations
 
-* Add indexes:
+- Add indexes:
 
 ```sql
 CREATE INDEX idx_products_farmer ON products(farmer_id);
 CREATE INDEX idx_orders_user ON orders(user_id);
 ```
 
-* Use pagination (LIMIT, OFFSET)
+- Use pagination (LIMIT, OFFSET)
 
 ---
 
 # 🔒 10. Security
 
-* bcrypt password hashing
-* JWT expiration (7d or 1d)
-* Rate limiting
-* Input validation (Zod recommended)
+- bcrypt password hashing
+- JWT expiration (7d or 1d)
+- Rate limiting
+- Input validation (Zod recommended)
 
 ---
 
@@ -355,11 +355,10 @@ src/
 
 You didn’t mention these but you SHOULD include:
 
-* ✅ Stock management (`quantity_available`)
-* ✅ Soft delete for products
-* ✅ Order address snapshot
-* ✅ Payment status (even if COD)
-* ✅ Farmer profile page
+- ✅ Stock management (`quantity_available`)
+- ✅ Soft delete for products
+- ✅ Order address snapshot
+- ✅ Payment status (even if COD)
+- ✅ Farmer profile page
 
 ---
-

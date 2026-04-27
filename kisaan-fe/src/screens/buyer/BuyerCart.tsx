@@ -1,47 +1,106 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Pressable, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
-import { useCartStore } from '../../store/cart.store';
-import { createOrder } from '../../api/order.api';
-import { useMutation } from '@tanstack/react-query';
-import { colors, typography, spacing } from '../../theme/designSystem';
+import { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Pressable,
+  Alert,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { useCartStore } from "../../store/cart.store";
+import { createOrder } from "../../api/order.api";
+import { useMutation } from "@tanstack/react-query";
+import { colors, typography, spacing } from "../../theme/designSystem";
 
-type CartItem = { id: string; product: { id: number; title: string; price: number; unit: string; images: { url: string }[]; farmer?: { name: string } }; quantity: number };
+type CartItem = {
+  id: string;
+  product: {
+    id: number;
+    title: string;
+    price: number;
+    unit: string;
+    images: { url: string }[];
+    farmer?: { name: string };
+  };
+  quantity: number;
+};
 
 export default function BuyerCart() {
   const navigation = useNavigation<any>();
-  const { items, removeItem, updateQuantity, clearCart, total } = useCartStore();
-  const [address, setAddress] = useState('');
+  const { items, removeItem, updateQuantity, clearCart, total } =
+    useCartStore();
+  const [address, setAddress] = useState("");
 
   const { mutate: checkout, isLoading } = useMutation({
     mutationFn: createOrder,
     onSuccess: () => {
-      Alert.alert('Success', 'Order placed successfully!');
+      Alert.alert("Success", "Order placed successfully!");
       clearCart();
     },
-    onError: () => Alert.alert('Error', 'Failed to place order'),
+    onError: () => Alert.alert("Error", "Failed to place order"),
   });
 
   const handleCheckout = () => {
-    if (!address.trim()) { Alert.alert('Error', 'Please add a delivery address'); return; }
-    checkout({ address, items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })) });
+    if (!address.trim()) {
+      Alert.alert("Error", "Please add a delivery address");
+      return;
+    }
+    checkout({
+      address,
+      items: items.map((i) => ({
+        productId: i.product.id,
+        quantity: i.quantity,
+      })),
+    });
   };
 
   const renderItem = ({ item }: { item: CartItem }) => (
     <View style={styles.cartItem}>
-      <Image source={{ uri: item.product.images?.[0]?.url || 'https://placehold.co/100x100/F5B800/000000?text=Product' }} style={styles.itemImage} contentFit="cover" />
+      <Image
+        source={{
+          uri:
+            item.product.images?.[0]?.url ||
+            "https://placehold.co/100x100/F5B800/000000?text=Product",
+        }}
+        style={styles.itemImage}
+        contentFit="cover"
+      />
       <View style={styles.itemInfo}>
-        <Text style={styles.itemTitle} numberOfLines={1}>{item.product.title}</Text>
-        <Text style={styles.itemFarmer}>{item.product.farmer?.name || 'Local Farmer'}</Text>
-        <Text style={styles.itemPrice}>₹{item.product.price * item.quantity}</Text>
+        <Text style={styles.itemTitle} numberOfLines={1}>
+          {item.product.title}
+        </Text>
+        <Text style={styles.itemFarmer}>
+          {item.product.farmer?.name || "Local Farmer"}
+        </Text>
+        <Text style={styles.itemPrice}>
+          ₹{item.product.price * item.quantity}
+        </Text>
       </View>
       <View style={styles.quantityControls}>
-        <Pressable style={styles.quantityButton} onPress={() => updateQuantity(item.product.id, item.quantity - 1)}><Ionicons name="remove" size={16} color={colors.onSurface} /></Pressable>
+        <Pressable
+          style={styles.quantityButton}
+          onPress={() => updateQuantity(item.product.id, item.quantity - 1)}
+        >
+          <Ionicons name="remove" size={16} color={colors.onSurface} />
+        </Pressable>
         <Text style={styles.quantity}>{item.quantity}</Text>
-        <Pressable style={styles.quantityButton} onPress={() => updateQuantity(item.product.id, item.quantity + 1)}><Ionicons name="add" size={16} color={colors.onSurface} /></Pressable>
+        <Pressable
+          style={styles.quantityButton}
+          onPress={() => updateQuantity(item.product.id, item.quantity + 1)}
+        >
+          <Ionicons name="add" size={16} color={colors.onSurface} />
+        </Pressable>
       </View>
-      <Pressable style={styles.removeButton} onPress={() => removeItem(item.product.id)}><Ionicons name="trash" size={20} color={colors.error} /></Pressable>
+      <Pressable
+        style={styles.removeButton}
+        onPress={() => removeItem(item.product.id)}
+      >
+        <Ionicons name="trash" size={20} color={colors.error} />
+      </Pressable>
     </View>
   );
 
@@ -49,7 +108,10 @@ export default function BuyerCart() {
     <View style={styles.emptyContainer}>
       <Ionicons name="cart" size={48} color={colors.onSurfaceTertiary} />
       <Text style={styles.emptyText}>Your cart is empty</Text>
-      <TouchableOpacity style={styles.shopButton} onPress={() => navigation.navigate('Home')}>
+      <TouchableOpacity
+        style={styles.shopButton}
+        onPress={() => navigation.navigate("Home")}
+      >
         <Text style={styles.shopButtonText}>Start Shopping</Text>
       </TouchableOpacity>
     </View>
@@ -57,16 +119,47 @@ export default function BuyerCart() {
 
   return (
     <View style={styles.container}>
-      <FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item.id} ListEmptyComponent={ListEmpty} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false} />
+      <FlatList
+        data={items}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={ListEmpty}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
       {items.length > 0 && (
         <View style={styles.footer}>
-          <TouchableOpacity style={styles.addressInput} onPress={() => Alert.prompt('Address', 'Enter delivery address', (text) => setAddress(text || ''))}>
-            <Text style={address ? styles.addressText : styles.addressPlaceholder}>{address || 'Add delivery address'}</Text>
-            <Ionicons name="chevron-forward" size={20} color={colors.onSurfaceSecondary} />
+          <TouchableOpacity
+            style={styles.addressInput}
+            onPress={() =>
+              Alert.prompt("Address", "Enter delivery address", (text) =>
+                setAddress(text || ""),
+              )
+            }
+          >
+            <Text
+              style={address ? styles.addressText : styles.addressPlaceholder}
+            >
+              {address || "Add delivery address"}
+            </Text>
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={colors.onSurfaceSecondary}
+            />
           </TouchableOpacity>
-          <View style={styles.summary}><Text style={styles.totalLabel}>Total</Text><Text style={styles.totalValue}>₹{total}</Text></View>
-          <TouchableOpacity style={[styles.checkoutButton, isLoading && styles.buttonDisabled]} onPress={handleCheckout} disabled={isLoading}>
-            <Text style={styles.checkoutText}>{isLoading ? 'Processing...' : `Checkout • ₹${total}`}</Text>
+          <View style={styles.summary}>
+            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalValue}>₹{total}</Text>
+          </View>
+          <TouchableOpacity
+            style={[styles.checkoutButton, isLoading && styles.buttonDisabled]}
+            onPress={handleCheckout}
+            disabled={isLoading}
+          >
+            <Text style={styles.checkoutText}>
+              {isLoading ? "Processing..." : `Checkout • ₹${total}`}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -77,28 +170,100 @@ export default function BuyerCart() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   listContent: { flexGrow: 1 },
-  cartItem: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, backgroundColor: colors.surfaceElevated, marginHorizontal: spacing.md, marginVertical: spacing.xs, borderRadius: spacing.md },
-  itemImage: { width: 80, height: 80, borderRadius: spacing.sm, backgroundColor: colors.surface },
+  cartItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: spacing.md,
+    backgroundColor: colors.surfaceElevated,
+    marginHorizontal: spacing.md,
+    marginVertical: spacing.xs,
+    borderRadius: spacing.md,
+  },
+  itemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: spacing.sm,
+    backgroundColor: colors.surface,
+  },
   itemInfo: { flex: 1, marginLeft: spacing.md },
   itemTitle: { ...typography.headline, color: colors.onSurface },
-  itemFarmer: { ...typography.caption1, color: colors.onSurfaceSecondary, marginTop: 2 },
-  itemPrice: { ...typography.title3, color: colors.primary, marginTop: spacing.xs },
-  quantityControls: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: spacing.sm },
-  quantityButton: { width: 32, height: 32, justifyContent: 'center', alignItems: 'center' },
+  itemFarmer: {
+    ...typography.caption1,
+    color: colors.onSurfaceSecondary,
+    marginTop: 2,
+  },
+  itemPrice: {
+    ...typography.title3,
+    color: colors.primary,
+    marginTop: spacing.xs,
+  },
+  quantityControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
+  },
+  quantityButton: {
+    width: 32,
+    height: 32,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   quantity: { ...typography.headline, marginHorizontal: spacing.sm },
   removeButton: { padding: spacing.sm },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: spacing.xxl },
-  emptyText: { ...typography.body, color: colors.onSurfaceSecondary, marginTop: spacing.md },
-  shopButton: { backgroundColor: colors.primary, borderRadius: spacing.sm, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, marginTop: spacing.lg },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: spacing.xxl,
+  },
+  emptyText: {
+    ...typography.body,
+    color: colors.onSurfaceSecondary,
+    marginTop: spacing.md,
+  },
+  shopButton: {
+    backgroundColor: colors.primary,
+    borderRadius: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    marginTop: spacing.lg,
+  },
   shopButtonText: { ...typography.button, color: colors.onPrimary },
-  footer: { backgroundColor: colors.surfaceElevated, padding: spacing.md, borderTopWidth: 1, borderTopColor: colors.separator },
-  addressInput: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.surface, borderRadius: spacing.sm, padding: spacing.md, marginBottom: spacing.md },
+  footer: {
+    backgroundColor: colors.surfaceElevated,
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.separator,
+  },
+  addressInput: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+  },
   addressText: { ...typography.body, color: colors.onSurface, flex: 1 },
-  addressPlaceholder: { ...typography.body, color: colors.onSurfaceTertiary, flex: 1 },
-  summary: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.md },
+  addressPlaceholder: {
+    ...typography.body,
+    color: colors.onSurfaceTertiary,
+    flex: 1,
+  },
+  summary: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: spacing.md,
+  },
   totalLabel: { ...typography.headline, color: colors.onSurface },
   totalValue: { ...typography.title2, color: colors.primary },
-  checkoutButton: { backgroundColor: colors.primary, borderRadius: spacing.sm, padding: spacing.md, alignItems: 'center' },
+  checkoutButton: {
+    backgroundColor: colors.primary,
+    borderRadius: spacing.sm,
+    padding: spacing.md,
+    alignItems: "center",
+  },
   buttonDisabled: { opacity: 0.5 },
   checkoutText: { ...typography.button, color: colors.onPrimary },
 });

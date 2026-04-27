@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   View,
   Text,
@@ -9,15 +9,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../hooks/useAuth';
-import { colors, typography, spacing } from '../../theme/designSystem';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../hooks/useAuth";
+import { colors, typography, spacing } from "../../theme/designSystem";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { login, isLoading } = useAuth();
 
   const handleLogin = async () => {
@@ -29,7 +29,7 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -70,7 +70,10 @@ export default function LoginScreen() {
           </View>
 
           <TouchableOpacity
-            style={[styles.button, (!email || !password || isLoading) && styles.buttonDisabled]}
+            style={[
+              styles.button,
+              (!email || !password || isLoading) && styles.buttonDisabled,
+            ]}
             onPress={handleLogin}
             disabled={isLoading || !email || !password}
           >
@@ -83,7 +86,9 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register' as never)}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Register" as never)}
+            >
               <Text style={styles.linkText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
@@ -137,7 +142,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: spacing.sm,
     padding: spacing.md,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: spacing.lg,
   },
   buttonDisabled: {
@@ -148,8 +153,8 @@ const styles = StyleSheet.create({
     color: colors.onPrimary,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: spacing.xl,
   },
   footerText: {
@@ -159,6 +164,6 @@ const styles = StyleSheet.create({
   linkText: {
     ...typography.body,
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

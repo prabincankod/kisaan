@@ -2,7 +2,11 @@ import { useAuthStore } from "../store/auth.store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { login as loginApi, register as registerApi, getMe } from "../api/auth.api";
+import {
+  login as loginApi,
+  register as registerApi,
+  getMe,
+} from "../api/auth.api";
 import { Alert } from "react-native";
 
 export const useAuth = () => {
@@ -13,15 +17,20 @@ export const useAuth = () => {
     mutationFn: loginApi,
     onSuccess: async (response: any) => {
       const data = response.data;
-      await setAuth({
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-        role: data.user.role,
-        phone: data.user.phone || undefined,
-        address: data.user.address || undefined,
-      }, data.token);
-      router.replace(data.user.role === "farmer" ? "/farmer" as any : "/buyer" as any);
+      await setAuth(
+        {
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          role: data.user.role,
+          phone: data.user.phone || undefined,
+          address: data.user.address || undefined,
+        },
+        data.token,
+      );
+      router.replace(
+        data.user.role === "farmer" ? ("/farmer" as any) : ("/buyer" as any),
+      );
     },
     onError: (error: any) => {
       Alert.alert("Login Failed", error.message || "Invalid credentials");
@@ -31,12 +40,17 @@ export const useAuth = () => {
   const registerMutation = useMutation({
     mutationFn: registerApi,
     onSuccess: async () => {
-      Alert.alert("Success", "Registration successful! Please login with your credentials.", [
-        { text: "OK", onPress: () => router.replace("/login") }
-      ]);
+      Alert.alert(
+        "Success",
+        "Registration successful! Please login with your credentials.",
+        [{ text: "OK", onPress: () => router.replace("/login") }],
+      );
     },
     onError: (error: any) => {
-      Alert.alert("Registration Failed", error.message || "Something went wrong");
+      Alert.alert(
+        "Registration Failed",
+        error.message || "Something went wrong",
+      );
     },
   });
 
@@ -67,7 +81,10 @@ export const useAuth = () => {
     user,
     token,
     isAuthenticated: !!user,
-    isLoading: loadUserQuery.isLoading || loginMutation.isPending || registerMutation.isPending,
+    isLoading:
+      loadUserQuery.isLoading ||
+      loginMutation.isPending ||
+      registerMutation.isPending,
     login: loginMutation.mutate,
     register: registerMutation.mutate,
     logout: logoutMutation.mutate,

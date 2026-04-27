@@ -29,12 +29,14 @@ export const useCartStore = create<CartState>()(
 
       addItem: (product, quantity) => {
         const { items, farmerId } = get();
-        
+
         if (farmerId && farmerId !== product.farmerId) {
           return;
         }
 
-        const existingIndex = items.findIndex((item) => item.product.id === product.id);
+        const existingIndex = items.findIndex(
+          (item) => item.product.id === product.id,
+        );
 
         if (existingIndex >= 0) {
           const newItems = [...items];
@@ -42,7 +44,10 @@ export const useCartStore = create<CartState>()(
           set({ items: newItems });
         } else {
           set({
-            items: [...items, { id: `${product.id}-${Date.now()}`, product, quantity }],
+            items: [
+              ...items,
+              { id: `${product.id}-${Date.now()}`, product, quantity },
+            ],
             farmerId: product.farmerId,
             farmerName: product.farmer?.name || "Farmer",
           });
@@ -55,7 +60,7 @@ export const useCartStore = create<CartState>()(
           set({ items: items.filter((item) => item.product.id !== productId) });
         } else {
           const newItems = items.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
+            item.product.id === productId ? { ...item, quantity } : item,
           );
           set({ items: newItems });
         }
@@ -79,7 +84,7 @@ export const useCartStore = create<CartState>()(
         const { items } = get();
         return items.reduce(
           (sum, item) => sum + Number(item.product.price) * item.quantity,
-          0
+          0,
         );
       },
     }),
@@ -97,6 +102,6 @@ export const useCartStore = create<CartState>()(
           await AsyncStorage.removeItem(name);
         },
       },
-    }
-  )
+    },
+  ),
 );

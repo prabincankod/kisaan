@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const createProductSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   nutritionalInfo: z.string().optional(),
-  unit: z.enum(['kg', 'pcs']).default('kg'),
+  unit: z.enum(["kg", "pcs"]).default("kg"),
   price: z.number().positive(),
   quantityAvailable: z.number().int().min(0).default(0),
   categoryIds: z.array(z.number()).optional(),
@@ -14,7 +14,7 @@ export const updateProductSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   nutritionalInfo: z.string().optional(),
-  unit: z.enum(['kg', 'pcs']).optional(),
+  unit: z.enum(["kg", "pcs"]).optional(),
   price: z.number().positive().optional(),
   quantityAvailable: z.number().int().min(0).optional(),
   isActive: z.boolean().optional(),

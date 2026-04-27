@@ -145,12 +145,11 @@ const AppNavigator = () => {
 // src/api/product.api.ts
 import { api } from "./client";
 
-export const getProducts = (params) =>
-  api.get("/products", { params });
+export const getProducts = (params) => api.get("/products", { params });
 
 export const createProduct = (formData) =>
   api.post("/products", formData, {
-    headers: { "Content-Type": "multipart/form-data" }
+    headers: { "Content-Type": "multipart/form-data" },
   });
 ```
 
@@ -163,7 +162,7 @@ export const createProduct = (formData) =>
 ```ts
 const { data, isLoading } = useQuery({
   queryKey: ["products"],
-  queryFn: () => getProducts({ page: 1 }).then(res => res.data),
+  queryFn: () => getProducts({ page: 1 }).then((res) => res.data),
 });
 ```
 
@@ -188,9 +187,7 @@ try {
 ```ts
 await api.post("/quotations", {
   farmerId,
-  items: [
-    { productId, quantity, offeredPrice }
-  ]
+  items: [{ productId, quantity, offeredPrice }],
 });
 ```
 
@@ -240,12 +237,12 @@ await createProduct(formData);
 
 ### Farmer side:
 
-* Show list
-* Accept / Reject buttons
+- Show list
+- Accept / Reject buttons
 
 ```ts
 await api.patch(`/quotations/${id}/respond`, {
-  status: "accepted"
+  status: "accepted",
 });
 ```
 
@@ -253,12 +250,12 @@ await api.patch(`/quotations/${id}/respond`, {
 
 # 📦 12. Orders UI
 
-* Buyer → Track order
-* Farmer → Update status
+- Buyer → Track order
+- Farmer → Update status
 
 ```ts
 await api.patch(`/orders/${id}/status`, {
-  status: "shipped"
+  status: "shipped",
 });
 ```
 
@@ -266,7 +263,7 @@ await api.patch(`/orders/${id}/status`, {
 
 # ⚡ 13. Performance (Critical)
 
-* Use `FlatList` always:
+- Use `FlatList` always:
 
 ```tsx
 <FlatList
@@ -276,7 +273,7 @@ await api.patch(`/orders/${id}/status`, {
 />
 ```
 
-* Avoid re-renders with memo
+- Avoid re-renders with memo
 
 ---
 
@@ -328,15 +325,13 @@ Your biggest UX risks:
 
 ### ❌ Confusion between:
 
-* Add to cart
-* Send quotation
+- Add to cart
+- Send quotation
 
 👉 Fix:
 
-* Use **2 clear buttons**
-
-  * 🟢 “Buy Now”
-  * 🟡 “Negotiate Price”
+- Use **2 clear buttons**
+  - 🟢 “Buy Now”
+  - 🟡 “Negotiate Price”
 
 ---
-

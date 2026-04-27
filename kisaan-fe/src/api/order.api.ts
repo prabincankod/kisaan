@@ -17,7 +17,13 @@ export interface OrderItem {
 export interface Order {
   id: number;
   totalAmount: number;
-  status: "pending" | "confirmed" | "shipped" | "delivered" | "rejected" | "cancelled";
+  status:
+    | "pending"
+    | "confirmed"
+    | "shipped"
+    | "delivered"
+    | "rejected"
+    | "cancelled";
   type: "buy" | "quotation";
   paymentStatus: string;
   shippingAddress: string | null;
@@ -48,17 +54,32 @@ export interface CreateOrderParams {
   shippingAddress?: string;
 }
 
-export const getOrders = (params?: { page?: number; limit?: number; status?: string; type?: string }) =>
+export const getOrders = (params?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  type?: string;
+}) =>
   api.get<{ success: boolean; data: OrdersResponse }>("/orders", { params });
 
-export const getFarmerOrders = (params?: { page?: number; limit?: number; status?: string; type?: string }) =>
-  getOrders(params);
+export const getFarmerOrders = (params?: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  type?: string;
+}) => getOrders(params);
 
 export const getOrder = (id: number) =>
   api.get<{ success: boolean; data: Order }>(`/orders/${id}`);
 
 export const createOrderFromCart = (params: CreateOrderParams) =>
-  api.post<{ success: boolean; data: Order; message: string }>("/orders/from-cart", params);
+  api.post<{ success: boolean; data: Order; message: string }>(
+    "/orders/from-cart",
+    params,
+  );
 
 export const updateOrderStatus = (id: number, status: Order["status"]) =>
-  api.patch<{ success: boolean; data: Order; message: string }>(`/orders/${id}`, { status });
+  api.patch<{ success: boolean; data: Order; message: string }>(
+    `/orders/${id}`,
+    { status },
+  );

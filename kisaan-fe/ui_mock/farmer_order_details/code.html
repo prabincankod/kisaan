@@ -1,283 +1,440 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Order Details - Farmer View</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface-container-lowest": "#ffffff",
-                        "on-tertiary-fixed-variant": "#842225",
-                        "on-error-container": "#93000a",
-                        "on-tertiary-fixed": "#410005",
-                        "inverse-on-surface": "#ebf3eb",
-                        "on-primary": "#ffffff",
-                        "surface": "#f4fbf4",
-                        "surface-container-highest": "#dde4dd",
-                        "on-secondary-fixed": "#002117",
-                        "on-secondary": "#ffffff",
-                        "primary-container": "#10b981",
-                        "error-container": "#ffdad6",
-                        "on-background": "#161d19",
-                        "tertiary-fixed-dim": "#ffb3af",
-                        "primary-fixed-dim": "#4edea3",
-                        "on-tertiary-container": "#711419",
-                        "surface-variant": "#dde4dd",
-                        "on-secondary-fixed-variant": "#0b513d",
-                        "secondary-fixed": "#b0f0d6",
-                        "surface-dim": "#d4dcd5",
-                        "on-primary-fixed-variant": "#005236",
-                        "tertiary-fixed": "#ffdad7",
-                        "on-surface": "#161d19",
-                        "surface-container-low": "#eef6ee",
-                        "background": "#f4fbf4",
-                        "primary": "#006c49",
-                        "on-tertiary": "#ffffff",
-                        "on-surface-variant": "#3c4a42",
-                        "on-primary-container": "#00422b",
-                        "inverse-surface": "#2b322d",
-                        "outline-variant": "#bbcabf",
-                        "inverse-primary": "#4edea3",
-                        "surface-tint": "#006c49",
-                        "surface-bright": "#f4fbf4",
-                        "tertiary-container": "#fc7c78",
-                        "tertiary": "#a43a3a",
-                        "secondary-fixed-dim": "#95d3ba",
-                        "on-error": "#ffffff",
-                        "secondary": "#2b6954",
-                        "error": "#ba1a1a",
-                        "secondary-container": "#adedd3",
-                        "surface-container-high": "#e3eae3",
-                        "on-primary-fixed": "#002113",
-                        "surface-container": "#e8f0e9",
-                        "on-secondary-container": "#306d58",
-                        "primary-fixed": "#6ffbbe",
-                        "outline": "#6c7a71"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "xl": "4rem",
-                        "margin": "2rem",
-                        "sm": "1rem",
-                        "xs": "0.5rem",
-                        "lg": "2.5rem",
-                        "md": "1.5rem",
-                        "base": "4px",
-                        "gutter": "1.5rem"
-                    },
-                    "fontFamily": {
-                        "label-sm": ["Plus Jakarta Sans"],
-                        "h1": ["Plus Jakarta Sans"],
-                        "body-md": ["Plus Jakarta Sans"],
-                        "h3": ["Plus Jakarta Sans"],
-                        "h2": ["Plus Jakarta Sans"],
-                        "display": ["Plus Jakarta Sans"],
-                        "body-lg": ["Plus Jakarta Sans"],
-                        "label-md": ["Plus Jakarta Sans"]
-                    },
-                    "fontSize": {
-                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }],
-                        "h1": ["32px", { "lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "h3": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
-                        "h2": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
-                        "display": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600" }]
-                    }
-                }
-            }
-        }
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Order Details - Farmer View</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed-variant": "#842225",
+              "on-error-container": "#93000a",
+              "on-tertiary-fixed": "#410005",
+              "inverse-on-surface": "#ebf3eb",
+              "on-primary": "#ffffff",
+              surface: "#f4fbf4",
+              "surface-container-highest": "#dde4dd",
+              "on-secondary-fixed": "#002117",
+              "on-secondary": "#ffffff",
+              "primary-container": "#10b981",
+              "error-container": "#ffdad6",
+              "on-background": "#161d19",
+              "tertiary-fixed-dim": "#ffb3af",
+              "primary-fixed-dim": "#4edea3",
+              "on-tertiary-container": "#711419",
+              "surface-variant": "#dde4dd",
+              "on-secondary-fixed-variant": "#0b513d",
+              "secondary-fixed": "#b0f0d6",
+              "surface-dim": "#d4dcd5",
+              "on-primary-fixed-variant": "#005236",
+              "tertiary-fixed": "#ffdad7",
+              "on-surface": "#161d19",
+              "surface-container-low": "#eef6ee",
+              background: "#f4fbf4",
+              primary: "#006c49",
+              "on-tertiary": "#ffffff",
+              "on-surface-variant": "#3c4a42",
+              "on-primary-container": "#00422b",
+              "inverse-surface": "#2b322d",
+              "outline-variant": "#bbcabf",
+              "inverse-primary": "#4edea3",
+              "surface-tint": "#006c49",
+              "surface-bright": "#f4fbf4",
+              "tertiary-container": "#fc7c78",
+              tertiary: "#a43a3a",
+              "secondary-fixed-dim": "#95d3ba",
+              "on-error": "#ffffff",
+              secondary: "#2b6954",
+              error: "#ba1a1a",
+              "secondary-container": "#adedd3",
+              "surface-container-high": "#e3eae3",
+              "on-primary-fixed": "#002113",
+              "surface-container": "#e8f0e9",
+              "on-secondary-container": "#306d58",
+              "primary-fixed": "#6ffbbe",
+              outline: "#6c7a71",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              xl: "4rem",
+              margin: "2rem",
+              sm: "1rem",
+              xs: "0.5rem",
+              lg: "2.5rem",
+              md: "1.5rem",
+              base: "4px",
+              gutter: "1.5rem",
+            },
+            fontFamily: {
+              "label-sm": ["Plus Jakarta Sans"],
+              h1: ["Plus Jakarta Sans"],
+              "body-md": ["Plus Jakarta Sans"],
+              h3: ["Plus Jakarta Sans"],
+              h2: ["Plus Jakarta Sans"],
+              display: ["Plus Jakarta Sans"],
+              "body-lg": ["Plus Jakarta Sans"],
+              "label-md": ["Plus Jakarta Sans"],
+            },
+            fontSize: {
+              "label-sm": ["12px", { lineHeight: "1.2", fontWeight: "500" }],
+              h1: [
+                "32px",
+                {
+                  lineHeight: "1.25",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+              h3: ["20px", { lineHeight: "1.4", fontWeight: "600" }],
+              h2: ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+              display: [
+                "48px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+              "label-md": [
+                "14px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "0.01em",
+                  fontWeight: "600",
+                },
+              ],
+            },
+          },
+        },
+      };
     </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
     </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
+    <style>
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
   </head>
-<body class="bg-background text-on-surface font-body-md text-body-md antialiased min-h-screen">
-<!-- TopAppBar JSON Transcribed -->
-<header class="fixed top-0 w-full z-50 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-4 h-16">
-<button class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined">menu</span>
-</button>
-<div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">Kissan</div>
-<button class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined">search</span>
-</button>
-</header>
-<!-- Main Canvas -->
-<main class="pt-24 pb-xl px-4 md:px-margin max-w-[1200px] mx-auto">
-<!-- Contextual Header -->
-<div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div>
-<a class="inline-flex items-center text-on-surface-variant hover:text-primary mb-2 font-label-md text-label-md transition-colors" href="#">
-<span class="material-symbols-outlined mr-1" style="font-size: 18px;">arrow_back</span>
-                    Back to Orders
-                </a>
-<div class="flex items-center gap-4">
-<h1 class="font-h1 text-h1 text-on-surface">Order #ORD-8472</h1>
-<!-- Status Chip -->
-<div class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-3 py-1.5 rounded-full border border-outline-variant flex items-center gap-1.5">
-<div class="w-2 h-2 rounded-full bg-primary-container"></div>
-                        Pending
-                    </div>
-</div>
-<p class="text-on-surface-variant font-body-md text-body-md mt-1">Placed on October 24, 2023 at 08:30 AM</p>
-</div>
-<div class="flex gap-3 w-full md:w-auto">
-<button class="flex-1 md:flex-none border border-outline text-on-surface hover:border-primary hover:text-primary rounded-full py-2.5 px-6 font-label-md text-label-md transition-colors flex items-center justify-center gap-2">
-<span class="material-symbols-outlined" style="font-size: 18px;">print</span>
-                    Print
-                </button>
-</div>
-</div>
-<!-- Asymmetric Bento Grid Layout -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-<!-- Left Column: Items (Span 8) -->
-<div class="lg:col-span-8 space-y-gutter">
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-<div class="p-md border-b border-outline-variant">
-<h2 class="font-h3 text-h3 text-on-surface">Items to Fulfill</h2>
-</div>
-<!-- Data Table Style List -->
-<div class="px-md">
-<!-- Table Header -->
-<div class="hidden md:grid grid-cols-12 gap-4 py-3 border-b border-surface-container-highest text-primary font-label-md text-label-md">
-<div class="col-span-6">Product</div>
-<div class="col-span-2 text-center">Price</div>
-<div class="col-span-2 text-center">Qty</div>
-<div class="col-span-2 text-right">Total</div>
-</div>
-<!-- Item Row 1 -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-4 py-md border-b border-surface-container-highest items-center">
-<div class="col-span-1 md:col-span-6 flex items-center gap-4">
-<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden shrink-0">
-<img alt="Fresh organic potatoes in a rustic woven basket" class="w-full h-full object-cover" data-alt="Close up of fresh organic golden potatoes dusted with earth in a rustic woven basket, natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSJg9mXG365-ND_fejTEc84MdH3oJ2t-yDULX8H4B9Hs28bHjWOEmuoxBwsPPBb41gX-Z2G8x9oFxQFr71xQMophON3U-p29AlOJB3b0_as0rN8j2xm-9RLZj4a2Eey0EQYMPBKeTTWd9xU82-FTOA105uGStfr9wej9_nXhQHiEsEYH9XU12jXTWiJw-0ufe4miCMgNAqJoyFNsqypTZRLuE8V2ShC4VW-fRwOlXy0bS6pBNuhDuzNG29tawKsTD6hQf6_NAuG28"/>
-</div>
-<div>
-<h3 class="font-label-md text-label-md text-on-surface">Organic Golden Potatoes</h3>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Sack - 10kg</p>
-</div>
-</div>
-<div class="col-span-1 md:col-span-2 md:text-center font-body-md text-body-md text-on-surface">
-<span class="md:hidden text-on-surface-variant mr-2">Price:</span>$24.00
-                            </div>
-<div class="col-span-1 md:col-span-2 md:text-center font-label-md text-label-md text-on-surface">
-<span class="md:hidden text-on-surface-variant mr-2">Qty:</span>2
-                            </div>
-<div class="col-span-1 md:col-span-2 md:text-right font-label-md text-label-md text-on-surface">
-<span class="md:hidden text-on-surface-variant mr-2">Total:</span>$48.00
-                            </div>
-</div>
-<!-- Item Row 2 -->
-<div class="grid grid-cols-1 md:grid-cols-12 gap-4 py-md items-center">
-<div class="col-span-1 md:col-span-6 flex items-center gap-4">
-<div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden shrink-0">
-<img alt="Fresh green apples" class="w-full h-full object-cover" data-alt="Crisp bright green granny smith apples with water droplets, natural soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAw0Z5ZMHDcFIbyZHjPIRv54SDz6rYIdv2O6x0yxstjD74GHczs9JVdcm29QopAMvNWhxan8rv-PeyJLuLAPEjZsQPNK8gUNdgf8-_anpAV-40MufNceQ99StGjuqlzMK3JsaYldWLUycF9_qQ16-k5QfJlwfXjtnZFu5QufHwj4wN0zs7UFegGsSLo0jXVMr9ISpzxPR2aZxwyPtmtf6XHe35NmetPKzVvdJj2CNqDKtMZfBGQbK6-X6SQUMEuMDKP9I1hXEHFWxk"/>
-</div>
-<div>
-<h3 class="font-label-md text-label-md text-on-surface">Granny Smith Apples</h3>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Box - 5kg</p>
-</div>
-</div>
-<div class="col-span-1 md:col-span-2 md:text-center font-body-md text-body-md text-on-surface">
-<span class="md:hidden text-on-surface-variant mr-2">Price:</span>$18.50
-                            </div>
-<div class="col-span-1 md:col-span-2 md:text-center font-label-md text-label-md text-on-surface">
-<span class="md:hidden text-on-surface-variant mr-2">Qty:</span>1
-                            </div>
-<div class="col-span-1 md:col-span-2 md:text-right font-label-md text-label-md text-on-surface">
-<span class="md:hidden text-on-surface-variant mr-2">Total:</span>$18.50
-                            </div>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Column: Info & Actions (Span 4) -->
-<div class="lg:col-span-4 space-y-gutter">
-<!-- Action Card (Primary Focus) -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-[0_4px_12px_rgba(16,185,129,0.05)]">
-<h2 class="font-h3 text-h3 text-on-surface mb-4">Manage Order</h2>
-<div class="space-y-3">
-<button class="w-full bg-primary text-on-primary rounded-full py-3 px-6 font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-[0_4px_12px_rgba(16,185,129,0.15)] flex justify-center items-center gap-2">
-<span class="material-symbols-outlined" style="font-size: 20px;">local_shipping</span>
-                            Mark as Shipped
-                        </button>
-<button class="w-full bg-transparent border border-outline text-on-surface hover:border-primary hover:text-primary rounded-full py-3 px-6 font-label-md text-label-md transition-colors flex justify-center items-center gap-2">
-<span class="material-symbols-outlined" style="font-size: 20px;">chat_bubble_outline</span>
-                            Contact Buyer
-                        </button>
-</div>
-</div>
-<!-- Summary Card -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
-<h2 class="font-h3 text-h3 text-on-surface mb-4">Order Summary</h2>
-<div class="space-y-3 font-body-md text-body-md">
-<div class="flex justify-between text-on-surface-variant">
-<span>Subtotal (3 items)</span>
-<span class="text-on-surface">$66.50</span>
-</div>
-<div class="flex justify-between text-on-surface-variant">
-<span>Platform Fee (5%)</span>
-<span class="text-on-surface">-$3.33</span>
-</div>
-<div class="flex justify-between text-on-surface-variant pb-3 border-b border-surface-container-highest">
-<span>Shipping</span>
-<span class="text-on-surface">Buyer Paid</span>
-</div>
-<div class="flex justify-between font-label-md text-label-md pt-1">
-<span class="text-on-surface">Your Earnings</span>
-<span class="text-primary text-lg">$63.17</span>
-</div>
-</div>
-</div>
-<!-- Customer Info Card -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
-<h2 class="font-h3 text-h3 text-on-surface mb-4">Buyer Details</h2>
-<div class="flex items-start gap-3 mb-4">
-<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center shrink-0 text-primary">
-<span class="material-symbols-outlined">person</span>
-</div>
-<div>
-<p class="font-label-md text-label-md text-on-surface">Sarah Jenkins</p>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">sarah.j@example.com</p>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">+1 (555) 293-8471</p>
-</div>
-</div>
-<div class="border-t border-surface-container-highest pt-4 flex items-start gap-3">
-<div class="mt-0.5 text-outline">
-<span class="material-symbols-outlined" style="font-size: 20px;">location_on</span>
-</div>
-<div>
-<p class="font-label-md text-label-md text-on-surface mb-1">Delivery Address</p>
-<p class="font-body-md text-body-md text-on-surface-variant">
-                                482 Market Street, Apt 3B<br/>
-                                San Francisco, CA 94104<br/>
-                                United States
-                            </p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-</body></html>
+  <body
+    class="bg-background text-on-surface font-body-md text-body-md antialiased min-h-screen"
+  >
+    <!-- TopAppBar JSON Transcribed -->
+    <header
+      class="fixed top-0 w-full z-50 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center px-4 h-16"
+    >
+      <button
+        class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full flex items-center justify-center"
+      >
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <div
+        class="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight"
+      >
+        Kissan
+      </div>
+      <button
+        class="text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full flex items-center justify-center"
+      >
+        <span class="material-symbols-outlined">search</span>
+      </button>
+    </header>
+    <!-- Main Canvas -->
+    <main class="pt-24 pb-xl px-4 md:px-margin max-w-[1200px] mx-auto">
+      <!-- Contextual Header -->
+      <div
+        class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-4"
+      >
+        <div>
+          <a
+            class="inline-flex items-center text-on-surface-variant hover:text-primary mb-2 font-label-md text-label-md transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined mr-1" style="font-size: 18px"
+              >arrow_back</span
+            >
+            Back to Orders
+          </a>
+          <div class="flex items-center gap-4">
+            <h1 class="font-h1 text-h1 text-on-surface">Order #ORD-8472</h1>
+            <!-- Status Chip -->
+            <div
+              class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-3 py-1.5 rounded-full border border-outline-variant flex items-center gap-1.5"
+            >
+              <div class="w-2 h-2 rounded-full bg-primary-container"></div>
+              Pending
+            </div>
+          </div>
+          <p class="text-on-surface-variant font-body-md text-body-md mt-1">
+            Placed on October 24, 2023 at 08:30 AM
+          </p>
+        </div>
+        <div class="flex gap-3 w-full md:w-auto">
+          <button
+            class="flex-1 md:flex-none border border-outline text-on-surface hover:border-primary hover:text-primary rounded-full py-2.5 px-6 font-label-md text-label-md transition-colors flex items-center justify-center gap-2"
+          >
+            <span class="material-symbols-outlined" style="font-size: 18px"
+              >print</span
+            >
+            Print
+          </button>
+        </div>
+      </div>
+      <!-- Asymmetric Bento Grid Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <!-- Left Column: Items (Span 8) -->
+        <div class="lg:col-span-8 space-y-gutter">
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm"
+          >
+            <div class="p-md border-b border-outline-variant">
+              <h2 class="font-h3 text-h3 text-on-surface">Items to Fulfill</h2>
+            </div>
+            <!-- Data Table Style List -->
+            <div class="px-md">
+              <!-- Table Header -->
+              <div
+                class="hidden md:grid grid-cols-12 gap-4 py-3 border-b border-surface-container-highest text-primary font-label-md text-label-md"
+              >
+                <div class="col-span-6">Product</div>
+                <div class="col-span-2 text-center">Price</div>
+                <div class="col-span-2 text-center">Qty</div>
+                <div class="col-span-2 text-right">Total</div>
+              </div>
+              <!-- Item Row 1 -->
+              <div
+                class="grid grid-cols-1 md:grid-cols-12 gap-4 py-md border-b border-surface-container-highest items-center"
+              >
+                <div class="col-span-1 md:col-span-6 flex items-center gap-4">
+                  <div
+                    class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden shrink-0"
+                  >
+                    <img
+                      alt="Fresh organic potatoes in a rustic woven basket"
+                      class="w-full h-full object-cover"
+                      data-alt="Close up of fresh organic golden potatoes dusted with earth in a rustic woven basket, natural lighting"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSJg9mXG365-ND_fejTEc84MdH3oJ2t-yDULX8H4B9Hs28bHjWOEmuoxBwsPPBb41gX-Z2G8x9oFxQFr71xQMophON3U-p29AlOJB3b0_as0rN8j2xm-9RLZj4a2Eey0EQYMPBKeTTWd9xU82-FTOA105uGStfr9wej9_nXhQHiEsEYH9XU12jXTWiJw-0ufe4miCMgNAqJoyFNsqypTZRLuE8V2ShC4VW-fRwOlXy0bS6pBNuhDuzNG29tawKsTD6hQf6_NAuG28"
+                    />
+                  </div>
+                  <div>
+                    <h3 class="font-label-md text-label-md text-on-surface">
+                      Organic Golden Potatoes
+                    </h3>
+                    <p
+                      class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5"
+                    >
+                      Sack - 10kg
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="col-span-1 md:col-span-2 md:text-center font-body-md text-body-md text-on-surface"
+                >
+                  <span class="md:hidden text-on-surface-variant mr-2"
+                    >Price:</span
+                  >$24.00
+                </div>
+                <div
+                  class="col-span-1 md:col-span-2 md:text-center font-label-md text-label-md text-on-surface"
+                >
+                  <span class="md:hidden text-on-surface-variant mr-2"
+                    >Qty:</span
+                  >2
+                </div>
+                <div
+                  class="col-span-1 md:col-span-2 md:text-right font-label-md text-label-md text-on-surface"
+                >
+                  <span class="md:hidden text-on-surface-variant mr-2"
+                    >Total:</span
+                  >$48.00
+                </div>
+              </div>
+              <!-- Item Row 2 -->
+              <div
+                class="grid grid-cols-1 md:grid-cols-12 gap-4 py-md items-center"
+              >
+                <div class="col-span-1 md:col-span-6 flex items-center gap-4">
+                  <div
+                    class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden shrink-0"
+                  >
+                    <img
+                      alt="Fresh green apples"
+                      class="w-full h-full object-cover"
+                      data-alt="Crisp bright green granny smith apples with water droplets, natural soft daylight"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAw0Z5ZMHDcFIbyZHjPIRv54SDz6rYIdv2O6x0yxstjD74GHczs9JVdcm29QopAMvNWhxan8rv-PeyJLuLAPEjZsQPNK8gUNdgf8-_anpAV-40MufNceQ99StGjuqlzMK3JsaYldWLUycF9_qQ16-k5QfJlwfXjtnZFu5QufHwj4wN0zs7UFegGsSLo0jXVMr9ISpzxPR2aZxwyPtmtf6XHe35NmetPKzVvdJj2CNqDKtMZfBGQbK6-X6SQUMEuMDKP9I1hXEHFWxk"
+                    />
+                  </div>
+                  <div>
+                    <h3 class="font-label-md text-label-md text-on-surface">
+                      Granny Smith Apples
+                    </h3>
+                    <p
+                      class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5"
+                    >
+                      Box - 5kg
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="col-span-1 md:col-span-2 md:text-center font-body-md text-body-md text-on-surface"
+                >
+                  <span class="md:hidden text-on-surface-variant mr-2"
+                    >Price:</span
+                  >$18.50
+                </div>
+                <div
+                  class="col-span-1 md:col-span-2 md:text-center font-label-md text-label-md text-on-surface"
+                >
+                  <span class="md:hidden text-on-surface-variant mr-2"
+                    >Qty:</span
+                  >1
+                </div>
+                <div
+                  class="col-span-1 md:col-span-2 md:text-right font-label-md text-label-md text-on-surface"
+                >
+                  <span class="md:hidden text-on-surface-variant mr-2"
+                    >Total:</span
+                  >$18.50
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right Column: Info & Actions (Span 4) -->
+        <div class="lg:col-span-4 space-y-gutter">
+          <!-- Action Card (Primary Focus) -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-[0_4px_12px_rgba(16,185,129,0.05)]"
+          >
+            <h2 class="font-h3 text-h3 text-on-surface mb-4">Manage Order</h2>
+            <div class="space-y-3">
+              <button
+                class="w-full bg-primary text-on-primary rounded-full py-3 px-6 font-label-md text-label-md hover:bg-surface-tint transition-colors shadow-[0_4px_12px_rgba(16,185,129,0.15)] flex justify-center items-center gap-2"
+              >
+                <span class="material-symbols-outlined" style="font-size: 20px"
+                  >local_shipping</span
+                >
+                Mark as Shipped
+              </button>
+              <button
+                class="w-full bg-transparent border border-outline text-on-surface hover:border-primary hover:text-primary rounded-full py-3 px-6 font-label-md text-label-md transition-colors flex justify-center items-center gap-2"
+              >
+                <span class="material-symbols-outlined" style="font-size: 20px"
+                  >chat_bubble_outline</span
+                >
+                Contact Buyer
+              </button>
+            </div>
+          </div>
+          <!-- Summary Card -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md"
+          >
+            <h2 class="font-h3 text-h3 text-on-surface mb-4">Order Summary</h2>
+            <div class="space-y-3 font-body-md text-body-md">
+              <div class="flex justify-between text-on-surface-variant">
+                <span>Subtotal (3 items)</span>
+                <span class="text-on-surface">$66.50</span>
+              </div>
+              <div class="flex justify-between text-on-surface-variant">
+                <span>Platform Fee (5%)</span>
+                <span class="text-on-surface">-$3.33</span>
+              </div>
+              <div
+                class="flex justify-between text-on-surface-variant pb-3 border-b border-surface-container-highest"
+              >
+                <span>Shipping</span>
+                <span class="text-on-surface">Buyer Paid</span>
+              </div>
+              <div
+                class="flex justify-between font-label-md text-label-md pt-1"
+              >
+                <span class="text-on-surface">Your Earnings</span>
+                <span class="text-primary text-lg">$63.17</span>
+              </div>
+            </div>
+          </div>
+          <!-- Customer Info Card -->
+          <div
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md"
+          >
+            <h2 class="font-h3 text-h3 text-on-surface mb-4">Buyer Details</h2>
+            <div class="flex items-start gap-3 mb-4">
+              <div
+                class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center shrink-0 text-primary"
+              >
+                <span class="material-symbols-outlined">person</span>
+              </div>
+              <div>
+                <p class="font-label-md text-label-md text-on-surface">
+                  Sarah Jenkins
+                </p>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant text-sm"
+                >
+                  sarah.j@example.com
+                </p>
+                <p
+                  class="font-body-md text-body-md text-on-surface-variant text-sm"
+                >
+                  +1 (555) 293-8471
+                </p>
+              </div>
+            </div>
+            <div
+              class="border-t border-surface-container-highest pt-4 flex items-start gap-3"
+            >
+              <div class="mt-0.5 text-outline">
+                <span class="material-symbols-outlined" style="font-size: 20px"
+                  >location_on</span
+                >
+              </div>
+              <div>
+                <p class="font-label-md text-label-md text-on-surface mb-1">
+                  Delivery Address
+                </p>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                  482 Market Street, Apt 3B<br />
+                  San Francisco, CA 94104<br />
+                  United States
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

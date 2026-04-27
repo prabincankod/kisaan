@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Farmer Orders &amp; Quotations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#f8f9ff",
+                      "surface-container-high": "#dee9fc",
+                      "on-surface-variant": "#404943",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#a8e7c5",
+                      "inverse-on-surface": "#eaf1ff",
+                      "primary": "#0f5238",
+                      "on-tertiary-container": "#d5dccd",
+                      "surface-container-highest": "#d9e3f6",
+                      "on-tertiary-fixed": "#171d14",
+                      "inverse-surface": "#27313f",
+                      "on-error": "#ffffff",
+                      "secondary-fixed-dim": "#ffb77d",
+                      "secondary": "#904d00",
+                      "surface-tint": "#2c694e",
+                      "surface-container": "#e6eeff",
+                      "primary-container": "#2d6a4f",
+                      "error": "#ba1a1a",
+                      "surface-variant": "#d9e3f6",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#d0dbed",
+                      "inverse-primary": "#95d4b3",
+                      "outline-variant": "#bfc9c1",
+                      "on-background": "#121c2a",
+                      "primary-fixed": "#b1f0ce",
+                      "on-primary-fixed": "#002114",
+                      "on-secondary-container": "#663500",
+                      "outline": "#707973",
+                      "on-secondary-fixed": "#2f1500",
+                      "on-tertiary-fixed-variant": "#42493e",
+                      "secondary-container": "#fe932c",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface": "#121c2a",
+                      "on-secondary-fixed-variant": "#6e3900",
+                      "primary-fixed-dim": "#95d4b3",
+                      "tertiary-fixed-dim": "#c2c9bb",
+                      "background": "#f8f9ff",
+                      "surface-bright": "#f8f9ff",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed": "#dee5d6",
+                      "tertiary": "#42493f",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed-variant": "#0e5138",
+                      "secondary-fixed": "#ffdcc3",
+                      "surface-container-low": "#eff4ff",
+                      "tertiary-container": "#5a6156"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "xs": "8px",
+                      "sm": "12px",
+                      "gutter": "12px",
+                      "lg": "24px",
+                      "md": "16px",
+                      "container-margin": "16px",
+                      "xl": "32px"
+              },
+              "fontFamily": {
+                      "display": ["Plus Jakarta Sans"],
+                      "h1": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "h2": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "button": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "display": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "h1": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "h2": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                      "button": ["16px", {"lineHeight": "24px", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pb-24 pt-20 antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full flex justify-between items-center px-4 h-16 bg-emerald-50/90 dark:bg-stone-950/90 backdrop-blur-md font-['Plus_Jakarta_Sans'] text-base font-semibold border-b border-emerald-100 dark:border-stone-900 shadow-sm docked full-width z-50">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-emerald-800 dark:text-emerald-400">agriculture</span>
+<span class="text-xl font-extrabold tracking-tight text-emerald-900 dark:text-emerald-50">Kissan</span>
+</div>
+<div class="flex items-center">
+<img alt="Farmer profile picture" class="w-8 h-8 rounded-full object-cover border border-emerald-200" data-alt="close up portrait of a smiling middle-aged farmer wearing a straw hat, bright natural sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM6uNskfV9Xh4VZzcHVqOe3UYjf_fkU6h4DNxY1myJqwYRF5KkWc-zrw_0BI23wjwdf5cbpkdZ13B1GyxgUQSnedLfOK1jyGtTkOOtlpaKfBDOGs6pzYvyXMoxkF0HU252WnMvXJAE2uAJBRf4cewgFKYa54-SFqUt96y2k1UbmrmHObxXaM2SMf5cIEe1iMTwKsma9fRSorNo0Aw-twWd_Yx-cBiWtQWDSw93S6lxPjG1oppPNpPJA07qZBvPeuJllAGaCNlo0dk"/>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="max-w-4xl mx-auto px-container-margin flex flex-col gap-lg">
+<!-- Header & Tabs -->
+<div class="flex flex-col gap-sm">
+<h1 class="font-h1 text-h1 text-on-surface">Manage Sales</h1>
+<div class="flex bg-surface-container-low p-base rounded-lg mt-xs">
+<button class="flex-1 py-sm px-md rounded-DEFAULT bg-surface shadow-sm font-button text-button text-primary text-center transition-all">
+                    Orders
+                </button>
+<button class="flex-1 py-sm px-md rounded-DEFAULT text-on-surface-variant font-button text-button text-center hover:bg-surface-container transition-all">
+                    Quotations <span class="ml-xs bg-error text-on-error font-label-md text-label-md px-2 py-0.5 rounded-full">2</span>
+</button>
+</div>
+</div>
+<!-- Orders Section -->
+<section class="flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<h2 class="font-h2 text-h2 text-on-surface">Active Orders</h2>
+<button class="flex items-center gap-xs text-primary font-label-md text-label-md hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">filter_list</span>
+                    Filter
+                </button>
+</div>
+<!-- Order Card 1: Shipped -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row gap-md hover:shadow-md transition-shadow">
+<img alt="Fresh organic tomatoes" class="w-full sm:w-24 sm:h-24 object-cover rounded-lg" data-alt="basket of vibrant red organic tomatoes on a wooden table, soft natural daylight, high detail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYkoP8n6b6yUJSWpmbhsuNq7gyle8bwKZeIH7QEufc4GcA9b6LPjwawMXY6auyJ6yrv7e8MW0yyDtJkqAENLHU-vzU2n5UJ6FXUC4adWAf_4f6I_aX4FfK6CAZ-VtGTUNj753N45zci0PiH5WGXiMZWGTtNfBCLVTHWtuB9CZVWYa9-FkI2B2N3G-U6Fvm48NZp-KqoYYf3F_2e0l5lna2q5uzbaBExiomJZW38sfiBARHbNmqADNQIYkkRkBhFEkHxD10I6YcqcA"/>
+<div class="flex-1 flex flex-col justify-between gap-sm sm:gap-0">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-on-surface">Organic Red Tomatoes</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Buyer: FreshMart Grocers</p>
+</div>
+<div class="bg-primary-container/10 text-primary px-3 py-1 rounded-full font-label-md text-label-md uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined icon-filled" style="font-size: 14px;">local_shipping</span>
+                            Shipped
+                        </div>
+</div>
+<div class="flex justify-between items-end mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-0 border-surface-container-high">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-outline">QTY</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">50 kg</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-outline">TOTAL</span>
+<span class="font-h2 text-h2 text-primary">₹2,450</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Order Card 2: Pending -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col sm:flex-row gap-md hover:shadow-md transition-shadow">
+<img alt="Fresh potatoes" class="w-full sm:w-24 sm:h-24 object-cover rounded-lg" data-alt="pile of freshly harvested dirty potatoes on burlap sack, earthy tones, rustic setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAINbiBPRsqshO5N2wZb_s4-il84tChjHzQ99i7JhZFuZvuMX_YCFHwkmtPZaANtrMn8ZnQRV-l4p-lOHe81RJ99yWoXS9ax9sxGtfGWNZxMzLQPkHzCZX8fgVUcrs0L5KY1yUUXV-1dN_a9FbTJVcXP-eFK-N4aUAqW6SRjQZ8KyJDrMnITtR9CLPXPZeV2NuxYXyvulM57TqDNU6LzORgMPonlVG9eiAf7zBRar3opQXYEyIw5mVz1Vl-8ZkS8GDXUipw-jSusB0"/>
+<div class="flex-1 flex flex-col justify-between gap-sm sm:gap-0">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-on-surface">Russet Potatoes</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Buyer: Green Valley Cafe</p>
+</div>
+<div class="bg-secondary-container/20 text-secondary px-3 py-1 rounded-full font-label-md text-label-md uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined icon-filled" style="font-size: 14px;">pending_actions</span>
+                            Pending
+                        </div>
+</div>
+<div class="flex justify-between items-end mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-0 border-surface-container-high">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-outline">QTY</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">100 kg</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-md text-label-md text-outline">TOTAL</span>
+<span class="font-h2 text-h2 text-primary">₹3,200</span>
+</div>
+</div>
+</div>
+</article>
+</section>
+<!-- Quotations Section (Visual demonstration of the other tab's content) -->
+<section class="flex flex-col gap-md mt-lg">
+<div class="flex justify-between items-center">
+<h2 class="font-h2 text-h2 text-on-surface">Pending Quotations</h2>
+<span class="bg-surface-container-high text-on-surface px-2 py-1 rounded text-xs font-semibold">New</span>
+</div>
+<!-- Quotation Card -->
+<article class="bg-surface-container-lowest shadow-[0_4px_12px_rgba(15,82,56,0.05)] rounded-xl p-md flex flex-col gap-md border border-surface-container-high relative overflow-hidden">
+<!-- Highlight bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="flex justify-between items-start pl-2">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold">
+                            AV
+                        </div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">AgriVentures Supply</p>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 14px;">schedule</span> 2 hours ago
+                            </p>
+</div>
+</div>
+</div>
+<div class="bg-surface rounded-lg p-sm flex gap-sm items-center border border-surface-container-high ml-2">
+<img alt="Mangoes" class="w-12 h-12 rounded object-cover" data-alt="cluster of ripe yellow alphonso mangoes on green leaves, bright summer lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu3OvJfHXVE-bjo6oBraueZuiZ5a1ItX-wOepOO0L1WRm_4HoJGbxFnrK9MHBNrXVVsxli3BsgoBCU-7nHxMXPtUGqGbSa8OZ9zBzYPGESwkBIZzC7aQdnb3yhCk1B6LejShqsGeVyLo_GDEuAe7uYg5jTWSjUBwYN9uaBq72-DY2x_r-Ll-UWZs2cl_l9e4LeZG8greNf-WmhyQ3in1-ie6qfmONHELg0TMy7Zkm4qOjjS4PahajYehVBPgmbzbaoeqpp5eHt3Bc"/>
+<div class="flex-1">
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Alphonso Mangoes</h4>
+<p class="font-label-md text-label-md text-on-surface-variant">Requesting 200 boxes</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-outline line-through">₹850/box</p>
+<p class="font-h2 text-h2 text-secondary">₹790/box</p>
+</div>
+</div>
+<div class="flex justify-end gap-sm mt-xs ml-2">
+<button class="px-md py-sm rounded-lg border-2 border-primary text-primary font-button text-button hover:bg-primary/5 transition-colors">
+                        Counter Offer
+                    </button>
+<button class="px-md py-sm rounded-lg bg-primary text-on-primary font-button text-button hover:bg-primary-container transition-colors shadow-sm">
+                        Accept Deal
+                    </button>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full rounded-t-2xl border-t border-emerald-50 dark:border-stone-900 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] bg-white dark:bg-stone-950 font-['Plus_Jakarta_Sans'] text-[11px] font-medium z-50 md:hidden flex justify-around items-center px-4 pt-2 pb-6 left-0">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+            Home
+        </a>
+<!-- Products -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out" href="#">
+<span class="material-symbols-outlined mb-1">shopping_basket</span>
+            Products
+        </a>
+<!-- Orders (Active) -->
+<a class="flex flex-col items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-100 rounded-2xl px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out" href="#">
+<span class="material-symbols-outlined icon-filled mb-1">receipt_long</span>
+            Orders
+        </a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-emerald-600 dark:hover:text-emerald-300 active:scale-90 transition-all duration-200 ease-out" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+            Profile
+        </a>
+</nav>
+</body></html>

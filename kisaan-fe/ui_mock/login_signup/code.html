@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kissan - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dee9fc",
+                        "on-surface-variant": "#404943",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#a8e7c5",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary": "#0f5238",
+                        "on-tertiary-container": "#d5dccd",
+                        "surface-container-highest": "#d9e3f6",
+                        "on-tertiary-fixed": "#171d14",
+                        "inverse-surface": "#27313f",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#ffb77d",
+                        "secondary": "#904d00",
+                        "surface-tint": "#2c694e",
+                        "surface-container": "#e6eeff",
+                        "primary-container": "#2d6a4f",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#d9e3f6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d0dbed",
+                        "inverse-primary": "#95d4b3",
+                        "outline-variant": "#bfc9c1",
+                        "on-background": "#121c2a",
+                        "primary-fixed": "#b1f0ce",
+                        "on-primary-fixed": "#002114",
+                        "on-secondary-container": "#663500",
+                        "outline": "#707973",
+                        "on-secondary-fixed": "#2f1500",
+                        "on-tertiary-fixed-variant": "#42493e",
+                        "secondary-container": "#fe932c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#121c2a",
+                        "on-secondary-fixed-variant": "#6e3900",
+                        "primary-fixed-dim": "#95d4b3",
+                        "tertiary-fixed-dim": "#c2c9bb",
+                        "background": "#f8f9ff",
+                        "surface-bright": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#dee5d6",
+                        "tertiary": "#42493f",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "secondary-fixed": "#ffdcc3",
+                        "surface-container-low": "#eff4ff",
+                        "tertiary-container": "#5a6156"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "xs": "8px",
+                        "sm": "12px",
+                        "gutter": "12px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "container-margin": "16px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "display": ["Plus Jakarta Sans"],
+                        "h1": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "h2": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "button": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "display": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "h1": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "h2": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "button": ["16px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen relative flex flex-col items-center justify-center p-md overflow-hidden">
+<!-- Decorative Nature Background -->
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-15" data-alt="Soft, sunlit agricultural field from above at golden hour with misty atmosphere, earthy green tones, and soft depth of field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPncV4TPZfwLjhWL3nRVCJg83JgrqWEFTV3-Abs1PmlUUUXkyoVzCA61rUfNiE-sadP4fwPNCgBNejioBur_MDlHaUP8YfdplckKJF_HLYlnxggXWJZ9-qtuzrOl7P_QAcwWwdYx25pfHF3qc16M5mRX59-lF4kdgJu9KwSLMDphsOFA7TWh6_ZHYyzKqeetwIC7jKuO4s02uRY4SYggms2IVRTHvjIUbqZVI30TRSJKi97WN4UMBpmj4adrhwhDDCMtz0lTYCWt0"/>
+</div>
+<!-- Login/Signup Card Container -->
+<!-- Applying Tonal Layers concept: Level 1 with subtle border and diffused shadow -->
+<div class="relative z-10 w-full max-w-[440px] bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_rgba(18,28,42,0.05)] border border-outline-variant/50 p-lg flex flex-col gap-lg">
+<!-- Header / Logo -->
+<div class="flex flex-col items-center justify-center text-center gap-base">
+<span class="material-symbols-outlined text-[48px] text-primary" style="font-variation-settings: 'FILL' 1;">agriculture</span>
+<h1 class="font-display text-display text-primary mt-base">Kissan</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Connecting you directly to the source.</p>
+</div>
+<!-- Mode Toggle -->
+<div class="flex bg-surface-container rounded-lg p-base">
+<button class="flex-1 py-sm rounded-DEFAULT bg-surface-container-lowest text-primary shadow-[0_1px_2px_rgba(0,0,0,0.05)] font-label-md text-label-md text-center">Login</button>
+<button class="flex-1 py-sm rounded-DEFAULT text-on-surface-variant font-label-md text-label-md text-center hover:text-on-surface">Sign Up</button>
+</div>
+<!-- Role Selection -->
+<div class="flex gap-md">
+<label class="flex-1 cursor-pointer">
+<input class="peer sr-only" name="role" type="radio" value="farmer"/>
+<div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-sm flex flex-col items-center gap-xs peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary text-on-surface-variant hover:bg-surface-container/50">
+<span class="material-symbols-outlined text-[24px]">psychiatry</span>
+<span class="font-label-md text-label-md">Sign in as Farmer</span>
+</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input checked="" class="peer sr-only" name="role" type="radio" value="buyer"/>
+<div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-sm flex flex-col items-center gap-xs peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary text-on-surface-variant hover:bg-surface-container/50">
+<span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+<span class="font-label-md text-label-md">Sign in as Buyer</span>
+</div>
+</label>
+</div>
+<!-- Input Forms -->
+<form class="flex flex-col gap-md">
+<div class="flex flex-col gap-base">
+<label class="font-label-md text-label-md text-on-surface" for="identifier">Email or Phone Number</label>
+<input class="w-full bg-surface-bright border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-outline/70" id="identifier" placeholder="Enter your email or phone" type="text"/>
+</div>
+<div class="flex flex-col gap-base">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface" for="password">Password</label>
+<a class="font-label-md text-label-md text-primary hover:text-primary-container" href="#">Forgot password?</a>
+</div>
+<input class="w-full bg-surface-bright border border-outline-variant rounded-lg px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-outline/70" id="password" placeholder="Enter your password" type="password"/>
+</div>
+<!-- Action Button -->
+<button class="w-full mt-xs bg-primary-container text-on-primary rounded-lg py-sm font-button text-button shadow-[0_2px_4px_rgba(0,0,0,0.1)] hover:bg-primary active:opacity-85" type="submit">
+                Sign In
+            </button>
+</form>
+<!-- Terms -->
+<div class="text-center pt-xs">
+<p class="font-label-md text-label-md text-on-surface-variant">
+                By continuing, you agree to Kissan's <a class="text-primary underline" href="#">Terms of Service</a> and <a class="text-primary underline" href="#">Privacy Policy</a>.
+            </p>
+</div>
+</div>
+</body></html>

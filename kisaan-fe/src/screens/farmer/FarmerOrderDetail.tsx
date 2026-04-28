@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { getOrder, updateOrderStatus } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 import { BACKEND_URL } from "../../api/client";
+import { useState } from "react";
 
 type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "rejected" | "cancelled";
 
@@ -32,7 +34,7 @@ export default function FarmerOrderDetail() {
   const queryClient = useQueryClient();
   const { orderId } = route.params;
 
-  const { data: order, isLoading } = useQuery({
+  const { data: order, isLoading, refetch } = useQuery({
     queryKey: ["order", orderId],
     queryFn: async () => {
       const res: any = await getOrder(orderId);
@@ -67,6 +69,13 @@ export default function FarmerOrderDetail() {
       cancelled: colors.error,
     })[status] || colors.onSurfaceSecondary;
 
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+
   if (isLoading)
     return (
       <View style={styles.loading}>
@@ -83,11 +92,73 @@ export default function FarmerOrderDetail() {
   const nextAction = getNextAction();
 
   return (
-    <ScrollView style={styles.container}>
-       <View style={styles.statusSection}>
-        <Text style={styles.orderId}>Order #{order.id}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) }]}>
-          <Text style={styles.statusText}>{order.status}</Text>
+    <ScrollView 
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colors.primary}
+        />
+      }
+    >
+      <View style={styles.receiptContainer}>
+        <View style={styles.receiptHeader}>
+          <Text style={styles.receiptTitle}>Order Receipt</Text>
+          <Text style={styles.orderDate}>
+            Order #{order.id} • {new Date(order.createdAt).toLocaleDateString()}
+          </Text>
+        </View>
+
+        <View style={styles.receiptSection}>
+          <Text style={styles.sectionTitle}>Order Items</Text>
+          {order.items.map((item: any, index: number) => (
+            <View key={index} style={styles.receiptItem}>
+              <View style={styles.receiptItemLeft}>
+                <Text style={styles.itemTitle}>{item.product.title}</Text>
+                <Text style={styles.itemQuantity}>x{item.quantity} • ₹{item.product.price}/unit</Text>
+              </View>
+              <View style={styles.itemPriceContainer}>
+                {item.negotiatedPrice ? (
+                  <>
+                    <Text style={styles.itemOriginalPrice}>
+                      ₹{item.product.price * item.quantity}
+                    </Text>
+                    <Text style={styles.itemPrice}>
+                      ₹{item.negotiatedPrice * item.quantity}
+                    </Text>
+                  </>
+                ) : (
+                  <Text style={styles.itemPrice}>
+                    ₹{item.product.price * item.quantity}
+                  </Text>
+                )}
+              </View>
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.receiptDivider} />
+
+        <View style={styles.receiptRow}>
+          <Text style={styles.receiptLabel}>Subtotal</Text>
+          <Text style={styles.receiptValue}>₹{order.totalAmount}</Text>
+        </View>
+        
+        {order.negotiatedTotal && (
+          <View style={styles.receiptRow}>
+            <Text style={styles.receiptLabel}>Negotiated Total</Text>
+            <Text style={[styles.receiptValue, styles.negotiatedValue]}>₹{order.negotiatedTotal}</Text>
+          </View>
+        )}
+
+        <View style={styles.receiptDivider} />
+
+        <View style={styles.receiptRow}>
+          <Text style={styles.receiptTotalLabel}>Total</Text>
+          <Text style={styles.receiptTotalValue}>
+            ₹{order.negotiatedTotal || order.totalAmount}
+          </Text>
         </View>
       </View>
        <View style={styles.section}>

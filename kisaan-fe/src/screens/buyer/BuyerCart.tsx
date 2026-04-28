@@ -16,6 +16,7 @@ import { useCartStore } from "../../store/cart.store";
 import { createOrderFromCart } from "../../api/order.api";
 import { useMutation } from "@tanstack/react-query";
 import { colors, typography, spacing } from "../../theme/designSystem";
+import { BACKEND_URL } from "../../api/client";
 
 type CartItem = {
   id: string;
@@ -85,7 +86,7 @@ export default function BuyerCart() {
       <Image
         source={{
           uri: item.product.images?.[0]?.url 
-            ? `${BACKEND_URL}${item.product.images?.[0]?.url}`
+                    ? `${BACKEND_URL}${item.product.images[0].url}` `${BACKEND_URL}${item.product.images?.[0]?.url}`
             : "https://placehold.co/100x100/F5B800/000000?text=Product",
         }}
         style={styles.itemImage}

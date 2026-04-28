@@ -150,8 +150,14 @@ export default function BuyerProductDetail() {
               <Text style={styles.description}>{product.description}</Text>
             </View>
           )}
+          {product.nutritionalInfo && (
+            <View style={styles.nutritionContainer}>
+              <Text style={styles.sectionTitle}>Nutritional Info</Text>
+              <Text style={styles.nutritionText}>{product.nutritionalInfo}</Text>
+            </View>
+          )}
         </View>
-      </ScrollView>
+        </ScrollView>
        {isAvailable && (
         <View style={styles.footer}>
           <View style={styles.quantitySelector}>
@@ -261,6 +267,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   description: {
+    ...typography.body,
+    color: colors.onSurfaceSecondary,
+    lineHeight: 24,
+  },
+  nutritionContainer: { marginTop: spacing.lg },
+  nutritionText: {
     ...typography.body,
     color: colors.onSurfaceSecondary,
     lineHeight: 24,

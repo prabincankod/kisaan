@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getFarmerProducts, deleteProduct } from "../../api/product.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
+import { BACKEND_URL } from "../../api/client";
 
 
 type Product = {
@@ -69,12 +70,11 @@ export default function FarmerProducts() {
     <View style={styles.productCard}>
       <Image
         source={{
-          uri:
-            item.images?.[0]?.url ||
-            "https://placehold.co/100x100/F5B800/000000?text=Product",
+          uri: item.images?.[0]?.url 
+            ? `${BACKEND_URL}${item.images?.[0]?.url}`
+            : "https://placehold.co/100x100/F5B800/000000?text=Product",
         }}
         style={styles.productImage}
-        contentFit="cover"
       />
       <View style={styles.productInfo}>
         <Text style={styles.productTitle} numberOfLines={1}>

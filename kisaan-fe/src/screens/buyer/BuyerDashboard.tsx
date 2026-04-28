@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getProducts } from "../../api/product.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
+import { BACKEND_URL } from "@/src/api";
 
 type Product = {
   id: number;
@@ -87,12 +88,11 @@ export default function BuyerDashboard() {
     >
       <Image
         source={{
-          uri:
-            item.images?.[0]?.url ||
-            "https://placehold.co/200x200/F5B800/000000?text=Product",
+          uri: item.images?.[0]?.url 
+            ? `${BACKEND_URL}${item.images?.[0]?.url}`
+            : "https://placehold.co/200x200/F5B800/000000?text=Product",
         }}
         style={styles.productImage}
-        contentFit="cover"
       />
       <View style={styles.productInfo}>
         <Text style={styles.productTitle} numberOfLines={1}>

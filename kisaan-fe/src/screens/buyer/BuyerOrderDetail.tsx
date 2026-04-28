@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getOrder } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
+import { BACKEND_URL } from "@/src/api";
 
 const STATUS_STEPS = [
   { status: "pending", label: "Order Placed", icon: "checkmark" },
@@ -19,6 +20,8 @@ const STATUS_STEPS = [
   { status: "shipped", label: "Shipped", icon: "car" },
   { status: "delivered", label: "Delivered", icon: "checkmark" },
 ];
+
+const TERMINAL_STATUSES = ["rejected", "cancelled"];
 
 export default function BuyerOrderDetail() {
   const route = useRoute<any>();
@@ -30,8 +33,10 @@ export default function BuyerOrderDetail() {
       return res.data;
     },
   });
-  const getStatusIndex = (status: string) =>
-    STATUS_STEPS.findIndex((s) => s.status === status);
+  const getStatusIndex = (status: string) => {
+    if (TERMINAL_STATUSES.includes(status)) return -1;
+    return STATUS_STEPS.findIndex((s) => s.status === status);
+  };
 
   if (isLoading)
     return (
@@ -47,10 +52,18 @@ export default function BuyerOrderDetail() {
     );
 
   const currentIndex = getStatusIndex(order.status);
+  const isTerminal = TERMINAL_STATUSES.includes(order.status);
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.statusTimeline}>
+      {isTerminal ? (
+        <View style={styles.statusBadgeContainer}>
+          <View style={[styles.statusBadge, order.status === "rejected" ? styles.statusRejected : styles.statusCancelled]}>
+            <Text style={styles.statusBadgeText}>{order.status.toUpperCase()}</Text>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.statusTimeline}>
         {STATUS_STEPS.map((step, index) => (
           <View key={step.status} style={styles.timelineStep}>
             <View
@@ -89,19 +102,19 @@ export default function BuyerOrderDetail() {
           </View>
         ))}
       </View>
+      )} 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Order Items</Text>
         {order.items.map((item: any, index: number) => (
           <View key={index} style={styles.item}>
-            <Image
-              source={{
-                uri:
-                  item.product.images?.[0]?.url ||
-                  "https://placehold.co/60x60/F5B800/000000?text=Product",
-              }}
-              style={styles.itemImage}
-              contentFit="cover"
-            />
+             <Image
+               source={{
+                 uri: item.product.images?.[0]?.url 
+                    ? `${BACKEND_URL}${item.product.images?.[0]?.url}`
+                    : "https://placehold.co/60x60/F5B800/000000?text=Product",
+               }}
+               style={styles.itemImage}
+             />
             <View style={styles.itemInfo}>
               <Text style={styles.itemTitle}>{item.product.title}</Text>
               <Text style={styles.itemQuantity}>x{item.quantity}</Text>
@@ -223,4 +236,24 @@ const styles = StyleSheet.create({
   },
   totalLabel: { ...typography.title2, color: colors.onSurface },
   totalValue: { ...typography.title2, color: colors.primary },
+  statusBadgeContainer: {
+    alignItems: "center",
+    padding: spacing.xl,
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: spacing.sm,
+  },
+  statusBadgeText: {
+    ...typography.headline,
+    color: colors.onPrimary,
+    fontWeight: "700",
+  },
+  statusRejected: {
+    backgroundColor: colors.error,
+  },
+  statusCancelled: {
+    backgroundColor: colors.error,
+  },
 });

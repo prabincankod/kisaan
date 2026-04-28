@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -18,18 +18,20 @@ import { SafeAreaView as SafeArea } from "react-native-safe-area-context";
 type Order = {
   id: number;
   status: string;
-  total: number;
-  items: { product: { title: string } }[];
-  customer: { name: string; phone: string };
+  totalAmount: number;
+  negotiatedTotal?: number | null;
+  items: { product: { title: string; images?: { url: string }[] } }[];
+  customer?: { name: string; phone: string };
   createdAt: string;
 };
 const STATUS_TABS = [
   { status: "all", label: "All" },
   { status: "pending", label: "New" },
   { status: "confirmed", label: "Confirmed" },
-  { status: "preparing", label: "Preparing" },
-  { status: "outForDelivery", label: "Delivery" },
+  { status: "shipped", label: "Shipped" },
   { status: "delivered", label: "Delivered" },
+  { status: "rejected", label: "Rejected" },
+  { status: "cancelled", label: "Cancelled" },
 ];
 
 export default function FarmerOrders() {
@@ -66,37 +68,56 @@ export default function FarmerOrders() {
     ({
       pending: colors.warning,
       confirmed: colors.info,
-      preparing: colors.info,
-      outForDelivery: colors.info,
+      shipped: colors.info,
       delivered: colors.success,
+      rejected: colors.error,
       cancelled: colors.error,
     })[status] || colors.onSurfaceSecondary;
   const getNextStatus = (current: string): string | null =>
     ({
       pending: "confirmed",
-      confirmed: "preparing",
-      preparing: "outForDelivery",
-      outForDelivery: "delivered",
+      confirmed: "shipped",
+      shipped: "delivered",
     })[current] || null;
 
-  const renderTab = ({ item }: { item: (typeof STATUS_TABS)[0] }) => (
-    <TouchableOpacity
-      style={[styles.tab, selectedStatus === item.status && styles.tabActive]}
-      onPress={() => setSelectedStatus(item.status)}
-    >
-      <Text
+  const renderTab = ({ item }: { item: (typeof STATUS_TABS)[0] }) => {
+    const count = statusCounts[item.status] || 0;
+    return (
+      <TouchableOpacity
         style={[
-          styles.tabText,
-          selectedStatus === item.status && styles.tabTextActive,
+          styles.tab,
+          selectedStatus === item.status && styles.tabActive,
+          selectedStatus === item.status && { borderColor: colors.primary },
         ]}
+        onPress={() => setSelectedStatus(item.status)}
       >
-        {item.label}
-      </Text>
-    </TouchableOpacity>
-  );
+        <Text
+          style={[
+            styles.tabText,
+            selectedStatus === item.status && styles.tabTextActive,
+          ]}
+        >
+          {item.label}
+        </Text>
+        {count > 0 && (
+          <View style={[
+            styles.tabBadge,
+            selectedStatus === item.status && styles.tabBadgeActive,
+          ]}>
+            <Text style={[
+              styles.tabBadgeText,
+              selectedStatus === item.status && styles.tabBadgeTextActive,
+            ]}>{count}</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+    );
+
+  };
 
   const renderOrder = ({ item }: { item: Order }) => {
     const nextStatus = getNextStatus(item.status);
+    const displayTotal = item.negotiatedTotal || item.totalAmount || item.total;
     return (
       <View style={styles.orderCard}>
         <View style={styles.orderHeader}>
@@ -120,12 +141,14 @@ export default function FarmerOrders() {
               ? ` +${item.items.length - 1} more`
               : ""}
           </Text>
+          {item.totalAmount ? (
+            <Text style={styles.orderPrice}>₹{item.totalAmount}</Text>
+          ) : null}
         </View>
         <View style={styles.orderFooter}>
           <Text style={styles.orderDate}>
             {new Date(item.createdAt).toLocaleDateString()}
           </Text>
-          <Text style={styles.orderAmount}>₹{item.total}</Text>
         </View>
         <View style={styles.orderActions}>
           <TouchableOpacity
@@ -148,6 +171,14 @@ export default function FarmerOrders() {
       </View>
     );
   };
+
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: orders.length };
+    ordersData?.orders?.forEach((order: Order) => {
+      counts[order.status] = (counts[order.status] || 0) + 1;
+    });
+    return counts;
+  }, [ordersData]);
 
   const ListEmpty = () =>
     isLoading ? (
@@ -194,14 +225,41 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   tabsContainer: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   tab: {
-    backgroundColor: colors.surface,
-    borderRadius: spacing.full,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: spacing.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginRight: spacing.sm,
-    height: 200,
+    borderWidth: 1,
+    borderColor: colors.separator,
+    flexDirection: "row",
+    alignItems: "center",
   },
-  tabActive: { backgroundColor: colors.primary },
+  tabActive: { 
+    backgroundColor: colors.primary + "20",
+    borderColor: colors.primary,
+  },
+  tabBadge: {
+    backgroundColor: colors.onSurfaceTertiary,
+    borderRadius: spacing.full,
+    paddingHorizontal: spacing.xs,
+    marginLeft: spacing.xs,
+    minWidth: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 18,
+  },
+  tabBadgeActive: {
+    backgroundColor: colors.primary,
+  },
+  tabBadgeText: {
+    ...typography.caption2,
+    color: colors.surface,
+    fontWeight: "600",
+  },
+  tabBadgeTextActive: {
+    color: colors.onPrimary,
+  },
   tabText: { ...typography.subhead, color: colors.onSurface },
   tabTextActive: { color: colors.onPrimary, fontWeight: "600" },
   listContent: { flexGrow: 1, paddingBottom: spacing.xxl },
@@ -229,13 +287,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textTransform: "capitalize",
   },
-  orderInfo: { marginTop: spacing.sm },
+  orderInfo: { marginTop: spacing.sm, flex: 1 },
   customerName: { ...typography.body, color: colors.onSurface },
   orderItems: {
     ...typography.caption1,
     color: colors.onSurfaceSecondary,
     marginTop: 2,
   },
+  orderPrice: { ...typography.title3, color: colors.primary, marginTop: spacing.xs },
+  orderPriceContainer: { marginTop: spacing.xs },
   orderFooter: {
     flexDirection: "row",
     justifyContent: "space-between",

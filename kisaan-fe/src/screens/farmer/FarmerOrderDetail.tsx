@@ -13,12 +13,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getOrder, updateOrderStatus } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
+import { BACKEND_URL } from "../../api/client";
 
 type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "rejected" | "cancelled";
 
 const STATUS_FLOW: { status: OrderStatus; label: string; next: OrderStatus }[] = [
-  { status: "confirmed", label: "Confirm Order", next: "shipped" },
+  { status: "confirmed", label: "Mark Shipped", next: "shipped" },
   { status: "shipped", label: "Mark Delivered", next: "delivered" },
+];
+
+const QUOTATION_FLOW: { status: OrderStatus; label: string; next: OrderStatus }[] = [
+  { status: "pending", label: "Accept & Confirm", next: "confirmed" },
 ];
 
 export default function FarmerOrderDetail() {
@@ -46,8 +51,21 @@ export default function FarmerOrderDetail() {
 
   const getNextAction = () => {
     if (!order) return null;
+    if (order.type === "quotation" && order.status === "pending") {
+      return QUOTATION_FLOW.find((s) => s.status === order.status);
+    }
     return STATUS_FLOW.find((s) => s.status === order.status);
   };
+
+  const getStatusColor = (status: string) =>
+    ({
+      pending: colors.warning,
+      confirmed: colors.info,
+      shipped: colors.info,
+      delivered: colors.success,
+      rejected: colors.error,
+      cancelled: colors.error,
+    })[status] || colors.onSurfaceSecondary;
 
   if (isLoading)
     return (
@@ -66,9 +84,9 @@ export default function FarmerOrderDetail() {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.statusSection}>
+       <View style={styles.statusSection}>
         <Text style={styles.orderId}>Order #{order.id}</Text>
-        <View style={styles.statusBadge}>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(order.status) }]}>
           <Text style={styles.statusText}>{order.status}</Text>
         </View>
       </View>
@@ -95,22 +113,39 @@ export default function FarmerOrderDetail() {
         <Text style={styles.sectionTitle}>Items</Text>
         {order.items.map((item: any, index: number) => (
           <View key={index} style={styles.item}>
-            <Image
-              source={{
-                uri:
-                  item.product.images?.[0]?.url ||
-                  "https://placehold.co/60x60/F5B800/000000?text=Product",
-              }}
-              style={styles.itemImage}
-              contentFit="cover"
-            />
+              <Image
+                source={{
+                  uri: item.product.images?.[0]?.url 
+                    ? `${BACKEND_URL}${item.product.images?.[0]?.url}`
+                    : "https://placehold.co/60x60/F5B800/000000?text=Product",
+                }}
+                style={styles.itemImage}
+              />
             <View style={styles.itemInfo}>
               <Text style={styles.itemTitle}>{item.product.title}</Text>
               <Text style={styles.itemQuantity}>x{item.quantity}</Text>
+              {item.negotiatedPrice && (
+                <Text style={styles.itemNegotiatedPrice}>
+                  Negotiated: ₹{item.negotiatedPrice}
+                </Text>
+              )}
             </View>
-            <Text style={styles.itemPrice}>
-              ₹{item.product.price * item.quantity}
-            </Text>
+            <View style={styles.itemPriceContainer}>
+              {item.negotiatedPrice ? (
+                <>
+                  <Text style={styles.itemOriginalPrice}>
+                    ₹{item.product.price * item.quantity}
+                  </Text>
+                  <Text style={styles.itemPrice}>
+                    ₹{item.negotiatedPrice * item.quantity}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.itemPrice}>
+                  ₹{item.product.price * item.quantity}
+                </Text>
+              )}
+            </View>
           </View>
         ))}
       </View>
@@ -123,7 +158,14 @@ export default function FarmerOrderDetail() {
       <View style={styles.divider} />
       <View style={styles.totalSection}>
         <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.totalValue}>₹{order.totalAmount}</Text>
+        {order.negotiatedTotal ? (
+          <View style={styles.totalPriceContainer}>
+            <Text style={styles.totalOriginalPrice}>₹{order.totalAmount}</Text>
+            <Text style={styles.totalValue}>₹{order.negotiatedTotal}</Text>
+          </View>
+        ) : (
+          <Text style={styles.totalValue}>₹{order.totalAmount}</Text>
+        )}
       </View>
       {order.type === "quotation" && order.negotiatedTotal && (
         <View style={styles.negotiationSection}>
@@ -137,7 +179,7 @@ export default function FarmerOrderDetail() {
           </View>
           <View style={styles.negotiationRow}>
             <Text style={styles.negotiationLabel}>Your Listed Total:</Text>
-            <Text style={styles.negotiationValue}>₹{order.totalAmount}</Text>
+            <Text style={styles.negotiationOriginalValue}>₹{order.totalAmount}</Text>
           </View>
           {order.status === "pending" && (
             <View style={styles.negotiationActions}>
@@ -231,6 +273,13 @@ const styles = StyleSheet.create({
   itemTitle: { ...typography.body, color: colors.onSurface },
   itemQuantity: { ...typography.caption1, color: colors.onSurfaceSecondary },
   itemPrice: { ...typography.headline, color: colors.primary },
+  itemPriceContainer: { alignItems: "flex-end" },
+  itemOriginalPrice: { 
+    ...typography.caption1, 
+    color: colors.onSurfaceTertiary, 
+    textDecorationLine: "line-through" 
+  },
+  itemNegotiatedPrice: { ...typography.caption1, color: colors.primary },
   addressText: { ...typography.body, color: colors.onSurfaceSecondary },
   divider: {
     height: 1,
@@ -244,6 +293,12 @@ const styles = StyleSheet.create({
   },
   totalLabel: { ...typography.title2, color: colors.onSurface },
   totalValue: { ...typography.title2, color: colors.primary },
+  totalPriceContainer: { alignItems: "flex-end" },
+  totalOriginalPrice: { 
+    ...typography.title3, 
+    color: colors.onSurfaceTertiary, 
+    textDecorationLine: "line-through" 
+  },
   actionButton: {
     backgroundColor: colors.primary,
     borderRadius: spacing.sm,
@@ -282,6 +337,11 @@ const styles = StyleSheet.create({
   negotiationValue: {
     ...typography.title3,
     color: colors.primary,
+  },
+  negotiationOriginalValue: {
+    ...typography.title3,
+    color: colors.onSurfaceTertiary,
+    textDecorationLine: "line-through",
   },
   negotiationActions: {
     flexDirection: "row",

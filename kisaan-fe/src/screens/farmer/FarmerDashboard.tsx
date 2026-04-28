@@ -58,9 +58,9 @@ export default function FarmerDashboard() {
     ({
       pending: colors.warning,
       confirmed: colors.info,
-      preparing: colors.info,
-      outForDelivery: colors.info,
+      shipped: colors.info,
       delivered: colors.success,
+      rejected: colors.error,
       cancelled: colors.error,
     })[status] || colors.onSurfaceSecondary;
 

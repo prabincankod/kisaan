@@ -14,7 +14,7 @@ export const createOrderFromCartSchema = z.object({
 });
 
 export const updateOrderStatusSchema = z.object({
-  status: z.enum(["pending", "confirmed", "shipped", "delivered"]),
+  status: z.enum(["pending", "confirmed", "shipped", "delivered", "rejected", "cancelled"]),
 });
 
 export type CreateOrderFromCartInput = z.infer<

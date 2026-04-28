@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Animated,
+  Platform,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +16,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { getProduct } from "../../api/product.api";
 import { useCartStore } from "../../store/cart.store";
 import { colors, typography, spacing } from "../../theme/designSystem";
-import { BACKEND_URL } from "@/src/api";
+import { BACKEND_URL } from "../../api/client";
+
+let Haptics: any = null;
+if (Platform.OS !== "web") {
+  try {
+    Haptics = require("expo-haptics");
+  } catch (e) {}
+}
 
 export default function BuyerProductDetail() {
   const route = useRoute<any>();
@@ -30,11 +39,28 @@ export default function BuyerProductDetail() {
       return res.data;
     },
   });
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const fadeAnim = useState(new Animated.Value(0))[0];
+  
   const handleAddToCart = () => {
-    if (product) addItem(product, quantity);
+    if (product) {
+      addItem(product, quantity);
+      if (Haptics) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setShowSuccess(true);
+      Animated.sequence([
+        Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
+        Animated.delay(1500),
+        Animated.timing(fadeAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+      ]).start(() => setShowSuccess(false));
+    }
   };
   const totalPrice = (product?.price || 0) * quantity;
   const isAvailable = product?.quantityAvailable > 0;
+
+  const handleImagePress = (index: number) => {
+    setSelectedImageIndex(index);
+  };
 
   if (isLoading)
     return (
@@ -52,15 +78,46 @@ export default function BuyerProductDetail() {
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image
-          source={{
-            uri: product.images?.[0]?.url
-              ? BACKEND_URL + product.images?.[0]?.url
-              : "https://placehold.co/400x400/F5B800/000000?text=Product",
-          }}
-          style={styles.image}
-          contentFit="cover"
-        />
+        <View style={styles.imageContainer}>
+          <Image
+            source={{
+              uri: product.images?.[selectedImageIndex]?.url 
+                ? `${BACKEND_URL}${product.images[selectedImageIndex].url}`
+                : "https://placehold.co/400x400/F5B800/000000?text=Product",
+            }}
+            style={styles.mainImage}
+            resizeMode="cover"
+          />
+          {product.images && product.images.length > 1 && (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              style={styles.imageThumbnails}
+              contentContainerStyle={styles.thumbnailContainer}
+            >
+              {product.images.map((img: any, idx: number) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={[
+                    styles.thumbnail,
+                    selectedImageIndex === idx && styles.thumbnailActive,
+                  ]}
+                  onPress={() => handleImagePress(idx)}
+                >
+                  <Image
+                    source={{
+                      uri: img.url 
+                        ? `${BACKEND_URL}${img.url}`
+                        : "https://placehold.co/60x60/F5B800/000000?text=Product",
+                    }}
+                    style={styles.thumbnailImage}
+                    resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+        </View>
         <View style={styles.content}>
           <Text style={styles.title}>{product.title}</Text>
           {product.farmer && (
@@ -95,7 +152,7 @@ export default function BuyerProductDetail() {
           )}
         </View>
       </ScrollView>
-      {isAvailable && (
+       {isAvailable && (
         <View style={styles.footer}>
           <View style={styles.quantitySelector}>
             <TouchableOpacity
@@ -126,6 +183,13 @@ export default function BuyerProductDetail() {
           </TouchableOpacity>
         </View>
       )}
+
+      {showSuccess && (
+        <Animated.View style={[styles.successMessage, { opacity: fadeAnim }]}>
+          <Ionicons name="checkmark-circle" size={20} color={colors.white} />
+          <Text style={styles.successText}>Added to cart!</Text>
+        </Animated.View>
+      )}
     </View>
   );
 }
@@ -139,7 +203,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   errorText: { ...typography.body, color: colors.error },
-  image: { width: "100%", aspectRatio: 1, backgroundColor: colors.surface },
+  imageContainer: { position: "relative" },
+  mainImage: { width: "100%", aspectRatio: 1, backgroundColor: colors.surface },
+  imageThumbnails: {
+    flexDirection: "row",
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  thumbnailContainer: {
+    gap: spacing.sm,
+  },
+  thumbnail: {
+    width: 60,
+    height: 60,
+    borderRadius: spacing.sm,
+    borderWidth: 2,
+    borderColor: "transparent",
+    overflow: "hidden",
+  },
+  thumbnailActive: {
+    borderColor: colors.primary,
+  },
+  thumbnailImage: {
+    width: "100%",
+    height: "100%",
+  },
   content: { padding: spacing.md },
   title: { ...typography.title1, color: colors.onSurface },
   farmer: {
@@ -208,4 +296,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButtonText: { ...typography.button, color: colors.onPrimary },
+  successMessage: {
+    position: "absolute",
+    bottom: 100,
+    left: spacing.md,
+    right: spacing.md,
+    backgroundColor: colors.success,
+    borderRadius: spacing.sm,
+    padding: spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    zIndex: 1000,
+  },
+  successText: { ...typography.body, color: colors.white, fontWeight: "600" },
 });

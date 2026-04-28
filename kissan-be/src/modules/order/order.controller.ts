@@ -246,7 +246,7 @@ const updateOrderStatus = async (
       },
     });
 
-    if (status === "confirmed" && order.type === "buy") {
+    if (status === "confirmed") {
       for (const item of order.items as any) {
         await prisma.product.update({
           where: { id: item.productId },

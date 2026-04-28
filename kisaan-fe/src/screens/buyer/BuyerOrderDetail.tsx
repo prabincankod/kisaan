@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { getOrder } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 import { BACKEND_URL } from "@/src/api";
+import { useState } from "react";
 
 const STATUS_STEPS = [
   { status: "pending", label: "Order Placed", icon: "checkmark" },

@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import prisma from "../../utils/prisma.js";
 import { successResponse, errorResponse } from "../../utils/response.js";
 import { AuthenticatedRequest } from "../../types/index.js";
@@ -51,7 +51,15 @@ const getFarmers = async (req: AuthenticatedRequest, res: Response): Promise<voi
 
     res.json(
       successResponse(
-        { farmers, pagination: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) }),
+        {
+          farmers,
+          pagination: {
+            page: pageNum,
+            limit: limitNum,
+            total,
+            totalPages: Math.ceil(total / limitNum),
+          },
+        },
         "Farmers retrieved successfully",
       ),
     );
@@ -61,7 +69,7 @@ const getFarmers = async (req: AuthenticatedRequest, res: Response): Promise<voi
   }
 };
 
-const getFarmer = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+const getFarmer = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 

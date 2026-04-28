@@ -9,6 +9,7 @@ import { productRouter } from "./modules/product/index.js";
 import { categoryRouter } from "./modules/category/index.js";
 import { orderRouter } from "./modules/order/index.js";
 import statsRouter from "./modules/stats/stats.routes.js";
+import { farmerRouter } from "./modules/farmer/index.js";
 
 const app: Application = express();
 
@@ -28,6 +29,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/farmers", farmerRouter);
 app.use("/api/stats", statsRouter);
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

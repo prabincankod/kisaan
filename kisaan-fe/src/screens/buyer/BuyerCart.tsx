@@ -1,15 +1,18 @@
 import { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  Pressable,
-  Alert,
-} from "react-native";
+   View,
+   Text,
+   TextInput,
+   StyleSheet,
+   FlatList,
+   TouchableOpacity,
+   Image,
+   Pressable,
+   Alert,
+   Modal,
+   KeyboardAvoidingView,
+   Platform,
+ } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCartStore } from "../../store/cart.store";
@@ -36,6 +39,8 @@ export default function BuyerCart() {
   const { items, removeItem, updateQuantity, clearCart, getTotal } =
     useCartStore();
   const [address, setAddress] = useState("");
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [tempAddress, setTempAddress] = useState("");
   const [negotiatedTotal, setNegotiatedTotal] = useState("");
   const [negotiateMode, setNegotiateMode] = useState(false);
 
@@ -152,24 +157,23 @@ export default function BuyerCart() {
       {items.length > 0 && (
         <View style={styles.footer}>
           <TouchableOpacity
-            style={styles.addressInput}
-            onPress={() =>
-              Alert.prompt("Address", "Enter delivery address", (text) =>
-                setAddress(text || "")
-              )
-            }
-          >
-            <Text
-              style={address ? styles.addressText : styles.addressPlaceholder}
-            >
-              {address || "Add delivery address"}
-            </Text>
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={colors.onSurfaceSecondary}
-            />
-          </TouchableOpacity>
+             style={styles.addressInput}
+             onPress={() => {
+               setTempAddress(address);
+               setShowAddressModal(true);
+             }}
+           >
+             <Text
+               style={address ? styles.addressText : styles.addressPlaceholder}
+             >
+               {address || "Add delivery address"}
+             </Text>
+             <Ionicons
+               name="chevron-forward"
+               size={20}
+               color={colors.onSurfaceSecondary}
+             />
+           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.negotiateToggle}
@@ -228,9 +232,59 @@ export default function BuyerCart() {
           </TouchableOpacity>
         </View>
       )}
+
+      <Modal
+        visible={showAddressModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowAddressModal(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Delivery Address</Text>
+              <TouchableOpacity onPress={() => setShowAddressModal(false)}>
+                <Ionicons name="close" size={24} color={colors.onSurface} />
+              </TouchableOpacity>
+            </View>
+
+            <TextInput
+              style={styles.addressInputModal}
+              placeholder="Enter your delivery address"
+              placeholderTextColor={colors.onSurfaceTertiary}
+              value={tempAddress}
+              onChangeText={setTempAddress}
+              multiline
+              numberOfLines={4}
+              autoFocus
+            />
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonCancel]}
+                onPress={() => setShowAddressModal(false)}
+              >
+                <Text style={styles.modalButtonCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonSave]}
+                onPress={() => {
+                  setAddress(tempAddress.trim());
+                  setShowAddressModal(false);
+                }}
+              >
+                <Text style={styles.modalButtonSaveText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
-  );
-}
+   );
+ }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
@@ -413,5 +467,58 @@ const styles = StyleSheet.create({
     color: colors.onSurface,
     padding: spacing.xs,
   },
-  clearNegotiate: { padding: spacing.sm },
+   clearNegotiate: { padding: spacing.sm },
+   modalOverlay: {
+     flex: 1,
+     justifyContent: "flex-end",
+     backgroundColor: "rgba(0,0,0,0.5)",
+   },
+   modalContent: {
+     backgroundColor: colors.surfaceElevated,
+     borderTopLeftRadius: spacing.lg,
+     borderTopRightRadius: spacing.lg,
+     padding: spacing.lg,
+     paddingBottom: spacing.xl,
+   },
+   modalHeader: {
+     flexDirection: "row",
+     justifyContent: "space-between",
+     alignItems: "center",
+     marginBottom: spacing.lg,
+   },
+   modalTitle: { ...typography.title3, color: colors.onSurface },
+   addressInputModal: {
+     backgroundColor: colors.surface,
+     borderRadius: spacing.sm,
+     padding: spacing.md,
+     ...typography.body,
+     color: colors.onSurface,
+     textAlignVertical: "top",
+     minHeight: 100,
+     marginBottom: spacing.lg,
+   },
+   modalActions: {
+     flexDirection: "row",
+     gap: spacing.md,
+   },
+   modalButton: {
+     flex: 1,
+     padding: spacing.md,
+     borderRadius: spacing.sm,
+     alignItems: "center",
+   },
+   modalButtonCancel: {
+     backgroundColor: colors.surface,
+   },
+   modalButtonCancelText: {
+     ...typography.button,
+     color: colors.onSurfaceSecondary,
+   },
+   modalButtonSave: {
+     backgroundColor: colors.primary,
+   },
+   modalButtonSaveText: {
+     ...typography.button,
+     color: colors.onPrimary,
+   },
 });

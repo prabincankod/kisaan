@@ -9,11 +9,13 @@ import BuyerCategories from "../screens/buyer/BuyerCategories";
 import BuyerCart from "../screens/buyer/BuyerCart";
 import BuyerProfile from "../screens/buyer/BuyerProfile";
 import BuyerOrders from "../screens/buyer/BuyerOrders";
+import BuyerFarmerDetail from "../screens/buyer/BuyerFarmerDetail";
 
 export type BuyerStackParamList = {
   BuyerTabs: undefined;
   BuyerProductDetail: { productId: number };
   BuyerOrderDetail: { orderId: number };
+  BuyerFarmerDetail: { farmerId: number };
 };
 
 const Stack = createNativeStackNavigator<BuyerStackParamList>();
@@ -50,6 +52,11 @@ export function BuyerNavigator() {
         name="BuyerOrderDetail"
         component={BuyerOrderDetail}
         options={{ title: "Order Details" }}
+      />
+      <Stack.Screen
+        name="BuyerFarmerDetail"
+        component={BuyerFarmerDetail}
+        options={{ title: "Farmer Details" }}
       />
     </Stack.Navigator>
   );

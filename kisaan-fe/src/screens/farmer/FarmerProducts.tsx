@@ -33,7 +33,7 @@ export default function FarmerProducts() {
   const [refreshing, setRefreshing] = useState(false);
   const {
     data: productsData,
-    isLoading,
+    isPending: isLoading,
     refetch,
   } = useQuery({
     queryKey: ["farmer-products"],

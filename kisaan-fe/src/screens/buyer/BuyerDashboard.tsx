@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getProducts } from "../../api/product.api";
+import { getFarmers } from "../../api/farmer.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 import { BACKEND_URL } from "@/src/api";
 
@@ -41,7 +42,7 @@ export default function BuyerDashboard() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const { data: productsData, isLoading } = useQuery({
+  const { data: productsData, isPending: isLoading } = useQuery({
     queryKey: ["products", selectedCategory],
     queryFn: async () => {
       const res: any = await getProducts({
@@ -52,6 +53,16 @@ export default function BuyerDashboard() {
   });
 
   const products: Product[] = productsData?.products || [];
+
+  const { data: farmersData } = useQuery({
+    queryKey: ["top-farmers"],
+    queryFn: async () => {
+      const res: any = await getFarmers({ limit: 6 });
+      return res.data;
+    },
+  });
+  const topFarmers: any[] = farmersData?.farmers || [];
+  console.log(topFarmers)
 
   const renderCategory = ({ item }: { item: (typeof CATEGORIES)[0] }) => (
     <Pressable
@@ -109,6 +120,22 @@ export default function BuyerDashboard() {
     </TouchableOpacity>
   );
 
+  const renderFarmer = ({ item }: { item: any }) => (
+    <TouchableOpacity
+      style={styles.farmerCard}
+      onPress={() =>
+        navigation.navigate("BuyerFarmerDetail", { farmerId: item.id })
+      }
+    >
+      <View style={styles.farmerAvatar}>
+        <Ionicons name="person" size={24} color={colors.primary} />
+      </View>
+      <Text style={styles.farmerName} numberOfLines={1}>
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  );
+
   const ListHeader = () => (
     <View>
       <View style={styles.header}>
@@ -131,6 +158,19 @@ export default function BuyerDashboard() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.categoriesContainer}
       />
+      {topFarmers.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Top Farmers</Text>
+          <FlatList
+            horizontal
+            data={topFarmers}
+            renderItem={renderFarmer}
+            keyExtractor={(item) => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.farmersContainer}
+          />
+        </View>
+      )}
     </View>
   );
 
@@ -244,5 +284,37 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.onSurfaceSecondary,
     marginTop: spacing.md,
+  },
+  section: { padding: spacing.md },
+  sectionTitle: {
+    ...typography.headline,
+    color: colors.onSurface,
+    marginBottom: spacing.sm,
+  },
+  farmersContainer: {
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+  },
+  farmerCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.surfaceElevated,
+    padding: spacing.md,
+    borderRadius: spacing.md,
+    flex: 1,
+  },
+  farmerAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.surface,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  farmerName: {
+    ...typography.body,
+    color: colors.onSurface,
+    marginLeft: spacing.md,
+    flex: 1,
   },
 });

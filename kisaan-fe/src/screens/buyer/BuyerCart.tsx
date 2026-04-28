@@ -86,7 +86,7 @@ export default function BuyerCart() {
       <Image
         source={{
           uri: item.product.images?.[0]?.url 
-                    ? `${BACKEND_URL}${item.product.images[0].url}` `${BACKEND_URL}${item.product.images?.[0]?.url}`
+                    ?`${BACKEND_URL}${item.product.images?.[0]?.url}`
             : "https://placehold.co/100x100/F5B800/000000?text=Product",
         }}
         style={styles.itemImage}

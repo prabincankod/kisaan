@@ -53,6 +53,7 @@ const login = async (
 ): Promise<void> => {
   try {
     const { email, password } = req.body;
+    console.log(email, password);
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {

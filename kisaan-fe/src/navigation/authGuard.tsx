@@ -1,6 +1,6 @@
 import { useAuthStore } from "../store/auth.store";
-import { router } from "expo-router";
 import { useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { getMe } from "../api/auth.api";
 
@@ -30,14 +30,15 @@ export const useAuthGuard = () => {
 
 export const useAuthRedirect = () => {
   const { user } = useAuthStore();
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     if (user === null) {
-      router.replace("/login");
+      navigation.replace("Login");
     } else if (user.role === "farmer") {
-      router.replace("/farmer" as any);
+      navigation.replace("FarmerTabs");
     } else {
-      router.replace("/buyer" as any);
+      navigation.replace("BuyerTabs");
     }
-  }, [user]);
+  }, [user, navigation]);
 };

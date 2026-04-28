@@ -1,6 +1,6 @@
 import { useAuthStore } from "../store/auth.store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import {
   login as loginApi,
@@ -10,6 +10,7 @@ import {
 import { Alert } from "react-native";
 
 export const useAuth = () => {
+  const navigation = useNavigation<any>();
   const { user, token, setAuth, setUser, logout } = useAuthStore();
   const queryClient = useQueryClient();
 
@@ -28,8 +29,8 @@ export const useAuth = () => {
         },
         data.token,
       );
-      router.replace(
-        data.user.role === "farmer" ? ("/farmer" as any) : ("/buyer" as any),
+      navigation.replace(
+        data.user.role === "farmer" ? "FarmerTabs" : "BuyerTabs",
       );
     },
     onError: (error: any) => {
@@ -43,7 +44,7 @@ export const useAuth = () => {
       Alert.alert(
         "Success",
         "Registration successful! Please login with your credentials.",
-        [{ text: "OK", onPress: () => router.replace("/login") }],
+        [{ text: "OK", onPress: () => navigation.replace("Login") }],
       );
     },
     onError: (error: any) => {
@@ -60,7 +61,7 @@ export const useAuth = () => {
     },
     onSuccess: () => {
       queryClient.clear();
-      router.replace("/login");
+      navigation.replace("Login");
     },
   });
 

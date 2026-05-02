@@ -46,7 +46,7 @@ export function BuyerNavigator() {
       <Stack.Screen
         name="BuyerProductDetail"
         component={BuyerProductDetail}
-        options={{ title: "Product Details" }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="BuyerOrderDetail"

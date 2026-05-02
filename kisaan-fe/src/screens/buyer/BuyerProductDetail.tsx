@@ -1,4 +1,4 @@
-import { useState, useCallback, memo, useLayoutEffect } from "react";
+import { useState, useCallback, memo } from "react";
 import {
   View,
   Text,
@@ -142,10 +142,6 @@ export default function BuyerProductDetail() {
     setSelectedImageIndex(index);
   }, []);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({ title: product?.title });
-  }, [product?.title, navigation]);
-
   const isAvailable = (product?.quantityAvailable ?? 0) > 0;
   const totalPrice = (product?.price || 0) * quantity;
 
@@ -184,7 +180,19 @@ export default function BuyerProductDetail() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          hitSlop={spacing.sm}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {product.title}
+        </Text>
+        <View style={styles.headerRight} />
+      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

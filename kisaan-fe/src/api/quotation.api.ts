@@ -4,6 +4,8 @@ export interface QuotationItem {
   id: number;
   quantity: number;
   offeredPrice: number;
+  price?: number;
+  negotiatedPrice?: number | null;
   productId: number;
   product?: {
     id: number;
@@ -17,6 +19,9 @@ export interface QuotationItem {
 export interface Quotation {
   id: number;
   status: "pending" | "accepted" | "rejected";
+  type: "buy" | "quotation";
+  totalAmount: number;
+  negotiatedTotal?: number | null;
   userId: number;
   farmerId: number;
   items: QuotationItem[];
@@ -59,12 +64,12 @@ export const getQuotation = (id: number) =>
 
 export const createQuotation = (params: CreateQuotationParams) =>
   api.post<{ success: boolean; data: Quotation; message: string }>(
-    "/quotations",
-    params,
+    "/orders/from-cart",
+    { ...params, type: "quotation", totalAmount: 0 },
   );
 
-export const updateQuotationStatus = (id: number, status: "accepted" | "rejected") =>
+export const respondToQuotation = (id: number, status: "accepted" | "rejected") =>
   api.patch<{ success: boolean; data: Quotation; message: string }>(
-    `/quotations/${id}`,
+    `/quotations/${id}/respond`,
     { status },
   );

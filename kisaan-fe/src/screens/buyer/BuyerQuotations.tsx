@@ -12,16 +12,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
-import { getQuotations, updateQuotationStatus } from "../../api/quotation.api";
+import { getQuotations, respondToQuotation, Quotation } from "../../api/quotation.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
-
-type Quotation = {
-  id: number;
-  status: string;
-  farmer?: { name: string };
-  items: { product: { title: string; unit: string }; quantity: number; offeredPrice: number }[];
-  createdAt: string;
-};
 
 const STATUS_COLORS: Record<string, string> = {
   pending: colors.warning,
@@ -43,7 +35,7 @@ export default function BuyerQuotations() {
   });
 
   const { mutate: cancelQuotation } = useMutation({
-    mutationFn: (id: number) => updateQuotationStatus(id, "rejected"),
+    mutationFn: (id: number) => respondToQuotation(id, "rejected"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["buyer-quotations"] });
     },
@@ -65,7 +57,7 @@ export default function BuyerQuotations() {
   };
 
   const renderQuotation = ({ item }: { item: Quotation }) => {
-    const total = item.items.reduce((sum, i) => sum + i.offeredPrice * i.quantity, 0);
+    const total = item.items.reduce((sum, i) => sum + Number(i.offeredPrice || i.price || 0) * i.quantity, 0);
     return (
       <View style={styles.card}>
         <View style={styles.header}>
@@ -79,14 +71,17 @@ export default function BuyerQuotations() {
         </View>
 
         <View style={styles.items}>
-          {item.items.map((i, idx) => (
-            <View key={idx} style={styles.itemRow}>
-              <Text style={styles.itemTitle} numberOfLines={1}>
-                {i.product?.title || "Item"} × {i.quantity} {i.product?.unit}
-              </Text>
-              <Text style={styles.itemPrice}>₹{i.offeredPrice * i.quantity}</Text>
-            </View>
-          ))}
+          {item.items.map((i, idx) => {
+            const price = Number(i.offeredPrice || i.price || 0);
+            return (
+              <View key={idx} style={styles.itemRow}>
+                <Text style={styles.itemTitle} numberOfLines={1}>
+                  {i.product?.title || "Item"} × {i.quantity} {i.product?.unit}
+                </Text>
+                <Text style={styles.itemPrice}>₹{price * i.quantity}</Text>
+              </View>
+            );
+          })}
         </View>
 
         <View style={styles.footer}>

@@ -194,7 +194,7 @@ export default function BuyerDashboard() {
         </View>
         <TouchableOpacity
           style={styles.cartButton}
-          onPress={() => navigation.navigate("BuyerCart")}
+          onPress={() => navigation.navigate("Cart")}
         >
           <Ionicons name="cart" size={24} color={colors.primary} />
         </TouchableOpacity>

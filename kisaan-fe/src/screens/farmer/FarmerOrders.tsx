@@ -47,6 +47,7 @@ export default function FarmerOrders() {
     queryKey: ["farmer-orders", selectedStatus],
     queryFn: async () => {
       const res: any = await getOrders({
+        type: "buy",
         status: selectedStatus === "all" ? undefined : selectedStatus,
       });
       return res.data;

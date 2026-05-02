@@ -45,7 +45,7 @@ export function FarmerNavigator() {
       <Stack.Screen
         name="FarmerOrderDetail"
         component={FarmerOrderDetail}
-        options={{ title: "Order Details" }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

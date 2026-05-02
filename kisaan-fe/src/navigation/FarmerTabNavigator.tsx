@@ -4,6 +4,7 @@ import { colors } from "../theme/designSystem";
 import FarmerDashboard from "../screens/farmer/FarmerDashboard";
 import FarmerProducts from "../screens/farmer/FarmerProducts";
 import FarmerOrders from "../screens/farmer/FarmerOrders";
+import FarmerQuotations from "../screens/farmer/FarmerQuotations";
 import FarmerProfile from "../screens/farmer/FarmerProfile";
 
 const Tab = createBottomTabNavigator();
@@ -45,6 +46,15 @@ export default function FarmerTabNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="receipt" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Quotations"
+        component={FarmerQuotations}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="document-text" size={size} color={color} />
           ),
         }}
       />

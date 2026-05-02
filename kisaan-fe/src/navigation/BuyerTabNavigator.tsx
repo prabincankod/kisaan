@@ -4,6 +4,7 @@ import { colors } from "../theme/designSystem";
 import BuyerDashboard from "../screens/buyer/BuyerDashboard";
 import BuyerCart from "../screens/buyer/BuyerCart";
 import BuyerOrders from "../screens/buyer/BuyerOrders";
+import BuyerQuotations from "../screens/buyer/BuyerQuotations";
 import BuyerProfile from "../screens/buyer/BuyerProfile";
 
 const Tab = createBottomTabNavigator();
@@ -45,6 +46,15 @@ export default function BuyerTabNavigator() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="receipt" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Quotations"
+        component={BuyerQuotations}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="document-text" size={size} color={color} />
           ),
         }}
       />

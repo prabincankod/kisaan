@@ -13,11 +13,13 @@ interface CartState {
   items: CartItem[];
   farmerId: number | null;
   farmerName: string | null;
-  addItem: (product: Product, quantity: number) => void;
+  error: string | null;
+  addItem: (product: Product, quantity: number) => { success: boolean; message?: string };
   updateQuantity: (productId: number, quantity: number) => void;
   removeItem: (productId: number) => void;
   clearCart: () => void;
   getTotal: () => number;
+  clearError: () => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -26,12 +28,15 @@ export const useCartStore = create<CartState>()(
       items: [],
       farmerId: null,
       farmerName: null,
+      error: null,
 
       addItem: (product, quantity) => {
         const { items, farmerId } = get();
 
         if (farmerId && farmerId !== product.farmerId) {
-          return;
+          const message = `You can only buy from ${get().farmerName} at a time. Clear your cart to add items from ${product.farmer?.name || "this farmer"}.`;
+          set({ error: message });
+          return { success: false, message };
         }
 
         const existingIndex = items.findIndex(
@@ -41,7 +46,7 @@ export const useCartStore = create<CartState>()(
         if (existingIndex >= 0) {
           const newItems = [...items];
           newItems[existingIndex].quantity += quantity;
-          set({ items: newItems });
+          set({ items: newItems, error: null });
         } else {
           set({
             items: [
@@ -50,14 +55,21 @@ export const useCartStore = create<CartState>()(
             ],
             farmerId: product.farmerId,
             farmerName: product.farmer?.name || "Farmer",
+            error: null,
           });
         }
+        return { success: true };
       },
 
       updateQuantity: (productId, quantity) => {
         const { items } = get();
         if (quantity <= 0) {
-          set({ items: items.filter((item) => item.product.id !== productId) });
+          const newItems = items.filter((item) => item.product.id !== productId);
+          set({
+            items: newItems,
+            farmerId: newItems.length > 0 ? get().farmerId : null,
+            farmerName: newItems.length > 0 ? get().farmerName : null,
+          });
         } else {
           const newItems = items.map((item) =>
             item.product.id === productId ? { ...item, quantity } : item,
@@ -77,7 +89,11 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: () => {
-        set({ items: [], farmerId: null, farmerName: null });
+        set({ items: [], farmerId: null, farmerName: null, error: null });
+      },
+
+      clearError: () => {
+        set({ error: null });
       },
 
       getTotal: () => {

@@ -8,7 +8,9 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Pressable,
-  SafeAreaView,
+  RefreshControl,
+  Animated,
+  Platform,
 } from "react-native";
 import { SafeAreaView as SafeArea } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -16,8 +18,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getProducts } from "../../api/product.api";
 import { getFarmers } from "../../api/farmer.api";
+import { getCategories } from "../../api/category.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 import { BACKEND_URL } from "@/src/api";
+
+let Haptics: any = null;
+if (Platform.OS !== "web") {
+  try {
+    Haptics = require("expo-haptics");
+  } catch (e) {}
+}
 
 type Product = {
   id: number;
@@ -29,24 +39,40 @@ type Product = {
   quantityAvailable: number;
 };
 
-const CATEGORIES = [
-  { id: "all", name: "All", icon: "apps" },
-  { id: "vegetables", name: "Vegetables", icon: "leaf" },
-  { id: "fruits", name: "Fruits", icon: "nutrition" },
-  { id: "dairy", name: "Dairy", icon: "egg" },
-  { id: "grains", name: "Grains", icon: "grid" },
-];
+type Category = {
+  id: number;
+  name: string;
+  products: number;
+};
+
+const CATEGORY_ICONS: Record<string, string> = {
+  vegetables: "leaf",
+  fruits: "nutrition",
+  dairy: "egg",
+  grains: "grid",
+  default: "basket",
+};
 
 export default function BuyerDashboard() {
   const navigation = useNavigation<any>();
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { data: productsData, isPending: isLoading } = useQuery({
+  const { data: categoriesData, refetch: refetchCategories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res: any = await getCategories();
+      return res.data;
+    },
+  });
+  const categories: Category[] = categoriesData || [];
+
+  const { data: productsData, isPending: isLoading, refetch: refetchProducts } = useQuery({
     queryKey: ["products", selectedCategory],
     queryFn: async () => {
       const res: any = await getProducts({
-        category: selectedCategory === "all" ? undefined : selectedCategory,
+        categoryId: selectedCategory === "all" ? undefined : selectedCategory,
       });
       return res.data;
     },
@@ -62,33 +88,49 @@ export default function BuyerDashboard() {
     },
   });
   const topFarmers: any[] = farmersData?.farmers || [];
-  console.log(topFarmers)
 
-  const renderCategory = ({ item }: { item: (typeof CATEGORIES)[0] }) => (
-    <Pressable
-      style={[
-        styles.categoryChip,
-        selectedCategory === item.id && styles.categoryChipActive,
-      ]}
-      onPress={() => setSelectedCategory(item.id)}
-    >
-      <Ionicons
-        name={item.icon as any}
-        size={16}
-        color={
-          selectedCategory === item.id ? colors.onPrimary : colors.onSurface
-        }
-      />
-      <Text
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([refetchProducts(), refetchCategories()]);
+    setRefreshing(false);
+  };
+
+  const handleCategoryPress = (item: Category | { id: string; name: string }) => {
+    const isAll = item.id === "all";
+    const newSelection = isAll ? "all" : item.id as number;
+    setSelectedCategory(newSelection);
+    if (Haptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const renderCategory = ({ item }: { item: Category | { id: string; name: string; icon: string } }) => {
+    const isAll = item.id === "all";
+    const isSelected = isAll ? selectedCategory === "all" : selectedCategory === item.id;
+    const iconName = isAll ? "apps" : (CATEGORY_ICONS[(item as Category).name?.toLowerCase()] || CATEGORY_ICONS.default) as any;
+
+    return (
+      <Pressable
         style={[
-          styles.categoryText,
-          selectedCategory === item.id && styles.categoryTextActive,
+          styles.categoryChip,
+          isSelected && styles.categoryChipActive,
         ]}
+        onPress={() => handleCategoryPress(item)}
       >
-        {item.name}
-      </Text>
-    </Pressable>
-  );
+        <Ionicons
+          name={iconName}
+          size={16}
+          color={isSelected ? colors.onPrimary : colors.onSurface}
+        />
+        <Text
+          style={[
+            styles.categoryText,
+            isSelected && styles.categoryTextActive,
+          ]}
+        >
+          {item.name}
+        </Text>
+      </Pressable>
+    );
+  };
 
   const renderProduct = ({ item }: { item: Product }) => (
     <TouchableOpacity
@@ -96,6 +138,7 @@ export default function BuyerDashboard() {
       onPress={() =>
         navigation.navigate("BuyerProductDetail", { productId: item.id })
       }
+      activeOpacity={0.85}
     >
       <Image
         source={{
@@ -104,7 +147,13 @@ export default function BuyerDashboard() {
             : "https://placehold.co/200x200/F5B800/000000?text=Product",
         }}
         style={styles.productImage}
+        resizeMode="cover"
       />
+      {item.quantityAvailable <= 5 && item.quantityAvailable > 0 && (
+        <View style={styles.lowStockBadge}>
+          <Text style={styles.lowStockText}>Low Stock</Text>
+        </View>
+      )}
       <View style={styles.productInfo}>
         <Text style={styles.productTitle} numberOfLines={1}>
           {item.title}
@@ -152,9 +201,9 @@ export default function BuyerDashboard() {
       </View>
       <FlatList
         horizontal
-        data={CATEGORIES}
+        data={[{ id: "all", name: "All", icon: "apps" }, ...categories]}
         renderItem={renderCategory}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.categoriesContainer}
       />
@@ -183,8 +232,9 @@ export default function BuyerDashboard() {
       );
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="leaf" size={48} color={colors.onSurfaceTertiary} />
-        <Text style={styles.emptyText}>No products found</Text>
+        <Ionicons name="leaf-outline" size={56} color={colors.onSurfaceTertiary} />
+        <Text style={styles.emptyTitle}>No products found</Text>
+        <Text style={styles.emptyText}>Try selecting a different category</Text>
       </View>
     );
   };
@@ -201,6 +251,13 @@ export default function BuyerDashboard() {
         ListEmptyComponent={ListEmpty}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
+        }
       />
     </SafeArea>
   );

@@ -12,7 +12,7 @@ import BuyerOrders from "../screens/buyer/BuyerOrders";
 import BuyerFarmerDetail from "../screens/buyer/BuyerFarmerDetail";
 
 export type BuyerStackParamList = {
-  BuyerTabs: undefined;
+  Home: undefined;
   BuyerProductDetail: { productId: number };
   BuyerOrderDetail: { orderId: number };
   BuyerFarmerDetail: { farmerId: number };
@@ -39,7 +39,7 @@ export function BuyerNavigator() {
       }}
     >
       <Stack.Screen
-        name="BuyerTabs"
+        name="Home"
         component={BuyerTabNavigator}
         options={{ headerShown: false }}
       />
@@ -56,7 +56,7 @@ export function BuyerNavigator() {
       <Stack.Screen
         name="BuyerFarmerDetail"
         component={BuyerFarmerDetail}
-        options={{ title: "Farmer Details" }}
+        options={{ title: "Farmer" }}
       />
     </Stack.Navigator>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
    View,
    Text,
@@ -43,6 +43,23 @@ export default function BuyerCart() {
   const [tempAddress, setTempAddress] = useState("");
   const [negotiatedTotal, setNegotiatedTotal] = useState("");
   const [negotiateMode, setNegotiateMode] = useState(false);
+  const { error, clearError } = useCartStore();
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Cannot Add Item", error, [
+        { text: "OK", onPress: clearError },
+        {
+          text: "Clear Cart",
+          style: "destructive",
+          onPress: () => {
+            clearCart();
+            clearError();
+          },
+        },
+      ]);
+    }
+  }, [error]);
 
   const { mutate: checkout, isPending: isCheckingOut } = useMutation({
     mutationFn: (params: any) => createOrderFromCart(params),
@@ -175,45 +192,45 @@ export default function BuyerCart() {
              />
            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.negotiateToggle}
-            onPress={() => {
-              setNegotiateMode(!negotiateMode);
-              setNegotiatedTotal("");
-            }}
-          >
-            <Ionicons
-              name={negotiateMode ? "chevron-up" : "chevron-down"}
-              size={16}
-              color={colors.primary}
-            />
-            <Text style={styles.negotiateToggleText}>
-              {negotiateMode ? "Hide Negotiation" : "Negotiate Final Price"}
-            </Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+             style={styles.negotiateToggle}
+             onPress={() => {
+               setNegotiateMode(!negotiateMode);
+               setNegotiatedTotal("");
+             }}
+           >
+             <Ionicons
+               name={negotiateMode ? "chevron-up" : "chevron-down"}
+               size={16}
+               color={colors.primary}
+             />
+             <Text style={styles.negotiateToggleText}>
+               {negotiateMode ? "Hide Negotiation" : "Negotiate Price"}
+             </Text>
+           </TouchableOpacity>
 
-          {negotiateMode && (
-            <View style={styles.negotiatedTotalContainer}>
-              <Text style={styles.negotiatedTotalLabel}>Your Proposed Total:</Text>
-              <View style={styles.negotiatedTotalInput}>
-                <Text style={styles.currencySymbol}>₹</Text>
-                <TextInput
-                  style={styles.negotiatedTotalField}
-                  placeholder={getTotal().toString()}
-                  placeholderTextColor={colors.onSurfaceTertiary}
-                  value={negotiatedTotal}
-                  onChangeText={setNegotiatedTotal}
-                  keyboardType="decimal-pad"
-                />
-              </View>
-              <TouchableOpacity
-                style={styles.clearNegotiate}
-                onPress={() => setNegotiatedTotal("")}
-              >
-                <Ionicons name="close-circle" size={20} color={colors.onSurfaceSecondary} />
-              </TouchableOpacity>
-            </View>
-          )}
+           {negotiateMode && (
+             <View style={styles.negotiatedTotalContainer}>
+               <Text style={styles.negotiatedTotalLabel}>Your Proposed Total:</Text>
+               <View style={styles.negotiatedTotalInput}>
+                 <Text style={styles.currencySymbol}>₹</Text>
+                 <TextInput
+                   style={styles.negotiatedTotalField}
+                   placeholder={getTotal().toString()}
+                   placeholderTextColor={colors.onSurfaceTertiary}
+                   value={negotiatedTotal}
+                   onChangeText={setNegotiatedTotal}
+                   keyboardType="decimal-pad"
+                 />
+               </View>
+               <TouchableOpacity
+                 style={styles.clearNegotiate}
+                 onPress={() => setNegotiatedTotal("")}
+               >
+                 <Ionicons name="close-circle" size={20} color={colors.onSurfaceSecondary} />
+               </TouchableOpacity>
+             </View>
+           )}
 
           <View style={styles.summary}>
             <Text style={styles.totalLabel}>Total</Text>

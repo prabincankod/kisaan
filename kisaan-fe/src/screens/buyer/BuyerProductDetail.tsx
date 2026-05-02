@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, memo, useLayoutEffect } from "react";
+import { useState, useCallback, memo, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
-  Animated,
   Platform,
   Alert,
   TextInput,
@@ -23,7 +22,6 @@ import { createQuotation } from "../../api/quotation.api";
 import { colors, typography, spacing, borderRadius } from "../../theme/designSystem";
 import { BACKEND_URL } from "../../api/client";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StackScreenNativeProps } from "react-native-screens/lib/typescript/components/gamma/StackScreen";
 
 let Haptics: any = null;
 if (Platform.OS !== "web") {
@@ -144,6 +142,10 @@ export default function BuyerProductDetail() {
     setSelectedImageIndex(index);
   }, []);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: product?.title });
+  }, [product?.title, navigation]);
+
   const isAvailable = (product?.quantityAvailable ?? 0) > 0;
   const totalPrice = (product?.price || 0) * quantity;
 
@@ -154,15 +156,6 @@ export default function BuyerProductDetail() {
       </View>
     );
   }
-
-
-
-  useLayoutEffect(() => {
-
-    navigation.setOptions({ title: product?.title })
-    
-  }, [route])
-
 
   if (!product) {
     return (

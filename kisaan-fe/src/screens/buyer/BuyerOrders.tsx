@@ -11,6 +11,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getOrders } from "../../api/order.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 
@@ -116,7 +117,10 @@ export default function BuyerOrders() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Orders</Text>
+      </View>
       <FlatList
         data={orders}
         renderItem={renderOrder}
@@ -132,12 +136,21 @@ export default function BuyerOrders() {
           />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.separatorOpaque,
+  },
+  headerTitle: { ...typography.title1, color: colors.onSurface },
   listContent: { flexGrow: 1 },
   orderCard: {
     backgroundColor: colors.surfaceElevated,

@@ -12,7 +12,7 @@ import {
   Animated,
   Platform,
 } from "react-native";
-import { SafeAreaView as SafeArea } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
@@ -240,7 +240,7 @@ export default function BuyerDashboard() {
   };
 
   return (
-    <SafeArea style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <FlatList
         data={products}
         renderItem={renderProduct}
@@ -259,7 +259,7 @@ export default function BuyerDashboard() {
           />
         }
       />
-    </SafeArea>
+    </SafeAreaView>
   );
 }
 

@@ -43,3 +43,6 @@ export const register = (params: RegisterParams) =>
 
 export const getMe = () =>
   api.get<{ success: boolean; data: User }>("/auth/me");
+
+export const updateProfile = (data: { name?: string; phone?: string; address?: string }) =>
+  api.put<{ success: boolean; data: User }>("/auth/me", data);

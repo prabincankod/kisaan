@@ -5,17 +5,15 @@ import { colors } from "../theme/designSystem";
 import BuyerTabNavigator from "./BuyerTabNavigator";
 import BuyerProductDetail from "../screens/buyer/BuyerProductDetail";
 import BuyerOrderDetail from "../screens/buyer/BuyerOrderDetail";
-import BuyerCategories from "../screens/buyer/BuyerCategories";
-import BuyerCart from "../screens/buyer/BuyerCart";
-import BuyerProfile from "../screens/buyer/BuyerProfile";
-import BuyerOrders from "../screens/buyer/BuyerOrders";
 import BuyerFarmerDetail from "../screens/buyer/BuyerFarmerDetail";
+import EditProfile from "../screens/common/EditProfile";
 
 export type BuyerStackParamList = {
   Home: undefined;
   BuyerProductDetail: { productId: number };
   BuyerOrderDetail: { orderId: number };
   BuyerFarmerDetail: { farmerId: number };
+  EditProfile: undefined;
 };
 
 const Stack = createNativeStackNavigator<BuyerStackParamList>();
@@ -56,7 +54,12 @@ export function BuyerNavigator() {
       <Stack.Screen
         name="BuyerFarmerDetail"
         component={BuyerFarmerDetail}
-        options={{ title: "Farmer" }}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        options={{ title: "Edit Profile" }}
       />
     </Stack.Navigator>
   );

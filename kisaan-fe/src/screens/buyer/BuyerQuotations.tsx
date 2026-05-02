@@ -12,6 +12,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getQuotations, respondToQuotation, Quotation } from "../../api/quotation.api";
 import { colors, typography, spacing } from "../../theme/designSystem";
 
@@ -124,7 +125,10 @@ export default function BuyerQuotations() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Quotations</Text>
+      </View>
       <FlatList
         data={quotations}
         renderItem={renderQuotation}
@@ -140,12 +144,21 @@ export default function BuyerQuotations() {
           />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.separatorOpaque,
+  },
+  headerTitle: { ...typography.title1, color: colors.onSurface },
   listContent: { flexGrow: 1, paddingBottom: spacing.xxl },
   card: {
     backgroundColor: colors.surfaceElevated,

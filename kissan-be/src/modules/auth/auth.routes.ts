@@ -98,6 +98,35 @@ router.post(
   },
 );
 
+router.put(
+  "/me",
+  authMiddleware,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { name, phone, address } = req.body;
+
+      const user = await prisma.user.update({
+        where: { id: req.user!.id },
+        data: { name, phone, address },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          phone: true,
+          address: true,
+          createdAt: true,
+        },
+      });
+
+      res.json(successResponse(user));
+    } catch (error) {
+      console.error("Update profile error:", error);
+      res.status(500).json(errorResponse("Failed to update profile"));
+    }
+  },
+);
+
 router.get(
   "/me",
   authMiddleware,

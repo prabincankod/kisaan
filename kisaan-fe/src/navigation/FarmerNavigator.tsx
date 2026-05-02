@@ -5,11 +5,13 @@ import { colors } from "../theme/designSystem";
 import FarmerTabNavigator from "./FarmerTabNavigator";
 import FarmerAddProduct from "../screens/farmer/FarmerAddProduct";
 import FarmerOrderDetail from "../screens/farmer/FarmerOrderDetail";
+import EditProfile from "../screens/common/EditProfile";
 
 export type FarmerStackParamList = {
   FarmerTabs: undefined;
   FarmerAddProduct: { productId?: number };
   FarmerOrderDetail: { orderId: number };
+  EditProfile: undefined;
 };
 
 const Stack = createNativeStackNavigator<FarmerStackParamList>();
@@ -46,6 +48,11 @@ export function FarmerNavigator() {
         name="FarmerOrderDetail"
         component={FarmerOrderDetail}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        options={{ title: "Edit Profile" }}
       />
     </Stack.Navigator>
   );

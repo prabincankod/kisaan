@@ -15,6 +15,7 @@ import {
  } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useCartStore } from "../../store/cart.store";
 import { createOrderFromCart } from "../../api/order.api";
 import { useMutation } from "@tanstack/react-query";
@@ -82,8 +83,8 @@ export default function BuyerCart() {
   const { mutate: checkout, isPending: isCheckingOut } = useMutation({
     mutationFn: (params: any) => createOrderFromCart(params),
     onSuccess: () => {
-      Alert.alert("Success", "Order placed successfully!");
       clearCart();
+      navigation.navigate("Orders");
     },
     onError: () => Alert.alert("Error", "Failed to place order"),
   });
@@ -98,8 +99,8 @@ export default function BuyerCart() {
       return;
     }
     
-    const farmerId = items[0]?.product?.farmerId;
-    if (!farmerId) {
+    const fId = farmerId;
+    if (!fId) {
       Alert.alert("Error", "Unable to determine farmer for this order");
       return;
     }
@@ -108,7 +109,7 @@ export default function BuyerCart() {
     const finalTotal = hasNegotiation ? parseFloat(negotiatedTotal) : getTotal();
 
     checkout({
-      farmerId,
+      farmerId: fId,
       items: items.map((i) => ({
         productId: i.product.id,
         quantity: i.quantity,
@@ -180,7 +181,7 @@ export default function BuyerCart() {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       {farmerName && (
         <View style={styles.farmerBanner}>
           <Ionicons name="person" size={18} color={colors.onPrimary} />
@@ -323,7 +324,7 @@ export default function BuyerCart() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </View>
+    </SafeAreaView>
    );
  }
 

@@ -53,8 +53,8 @@ model User {
 model Product {
   id               Int               @id @default(autoincrement())
   title            String
-  description      String?
-  nutritionalInfo  String?
+  description       String?           @db.Text
+  nutritionalInfo   String?           @db.Text
   unit             ProductUnit       @default(kg)
   price            Decimal           @db.Decimal(10, 2)
   quantityAvailable Int               @default(0)

@@ -111,6 +111,26 @@ export default function BuyerProductDetail() {
       Haptics?.notificationFeedback?.(Haptics.NotificationFeedbackType.Success);
       setShowCartModal(true);
       setTimeout(() => setShowCartModal(false), 1500);
+    } else if (result.message?.includes("Replace cart")) {
+      Alert.alert(
+        "Different Farmer",
+        result.message,
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Replace Cart",
+            style: "destructive",
+            onPress: () => {
+              const replaceResult = addItem(product, quantity, true);
+              if (replaceResult.success) {
+                Haptics?.notificationFeedback?.(Haptics.NotificationFeedbackType.Success);
+                setShowCartModal(true);
+                setTimeout(() => setShowCartModal(false), 1500);
+              }
+            },
+          },
+        ]
+      );
     } else {
       Alert.alert("Cannot Add", result.message || "Failed to add to cart");
     }

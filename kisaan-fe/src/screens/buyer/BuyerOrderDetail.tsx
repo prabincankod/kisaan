@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   View,
   Text,
@@ -7,28 +8,31 @@ import {
   ActivityIndicator,
   Image,
   RefreshControl,
+  Linking,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getOrder } from "../../api/order.api";
-import { colors, typography, spacing } from "../../theme/designSystem";
-import { BACKEND_URL } from "@/src/api";
-import { useState } from "react";
+import { colors, typography, spacing, borderRadius } from "../../theme/designSystem";
+import { BACKEND_URL } from "../../api/client";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const STATUS_STEPS = [
-  { status: "pending", label: "Order Placed", icon: "checkmark" },
-  { status: "confirmed", label: "Confirmed", icon: "checkmark" },
-  { status: "shipped", label: "Shipped", icon: "car" },
-  { status: "delivered", label: "Delivered", icon: "checkmark" },
+  { status: "pending", label: "Placed", icon: "receipt" },
+  { status: "confirmed", label: "Confirmed", icon: "checkmark-circle" },
+  { status: "shipped", label: "Shipped", icon: "boat" },
+  { status: "delivered", label: "Delivered", icon: "flag" },
 ];
 
 const TERMINAL_STATUSES = ["rejected", "cancelled"];
 
 export default function BuyerOrderDetail() {
   const route = useRoute<any>();
+  const navigation = useNavigation<any>();
   const { orderId } = route.params;
   const [refreshing, setRefreshing] = useState(false);
+
   const { data: order, isLoading, refetch } = useQuery({
     queryKey: ["order", orderId],
     queryFn: async () => {
@@ -42,154 +46,256 @@ export default function BuyerOrderDetail() {
     await refetch();
     setRefreshing(false);
   };
+
   const getStatusIndex = (status: string) => {
     if (TERMINAL_STATUSES.includes(status)) return -1;
     return STATUS_STEPS.findIndex((s) => s.status === status);
   };
 
-  if (isLoading)
+  const handleCallFarmer = () => {
+    if (order?.farmer?.phone) {
+      Linking.openURL(`tel:${order.farmer.phone}`);
+    }
+  };
+
+  if (isLoading) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
-  if (!order)
+  }
+
+  if (!order) {
     return (
-      <View style={styles.loading}>
-        <Text style={styles.errorText}>Order not found</Text>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centerContent}>
+          <Ionicons name="alert-circle" size={64} color={colors.onSurfaceTertiary} />
+          <Text style={styles.errorText}>Order not found</Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
+  }
 
   const currentIndex = getStatusIndex(order.status);
   const isTerminal = TERMINAL_STATUSES.includes(order.status);
+  const total = Number(order.totalAmount);
+  const negotiatedTotal = order.negotiatedTotal ? Number(order.negotiatedTotal) : null;
+  const finalTotal = negotiatedTotal || total;
+  const itemCount = order.items?.length || 0;
+
+  const getStatusColor = (status: string) =>
+    ({
+      pending: colors.warning,
+      confirmed: colors.info,
+      shipped: colors.info,
+      delivered: colors.success,
+      rejected: colors.error,
+      cancelled: colors.error,
+    })[status] || colors.onSurfaceSecondary;
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={colors.primary}
-        />
-      }
-    >
-      {isTerminal ? (
-        <View style={styles.statusBadgeContainer}>
-          <View style={[styles.statusBadge, order.status === "rejected" ? styles.statusRejected : styles.statusCancelled]}>
-            <Text style={styles.statusBadgeText}>{order.status.toUpperCase()}</Text>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={22} color={colors.onSurface} />
+        </TouchableOpacity>
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>Order #{order.id}</Text>
+          <Text style={styles.headerDate}>
+            {new Date(order.createdAt).toLocaleDateString(undefined, {
+              day: "numeric",
+              month: "short",
+            })}
+          </Text>
+        </View>
+        <View style={styles.headerRight} />
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
+        }
+      >
+        {/* Status Section */}
+        {isTerminal ? (
+          <View style={[styles.statusBanner, { backgroundColor: getStatusColor(order.status) + "15" }]}>
+            <Ionicons
+              name={order.status === "rejected" ? "close-circle" : "ban"}
+              size={32}
+              color={getStatusColor(order.status)}
+            />
+            <Text style={[styles.terminalStatus, { color: getStatusColor(order.status) }]}>
+              Order {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.statusCard}>
+            {STATUS_STEPS.map((step, index) => {
+              const isActive = index <= currentIndex;
+              const isComplete = index < currentIndex;
+              return (
+                <View key={step.status} style={styles.stepItem}>
+                  <View
+                    style={[
+                      styles.stepDot,
+                      isActive && { backgroundColor: colors.primary },
+                      isComplete && { backgroundColor: colors.success },
+                    ]}
+                  >
+                    <Ionicons
+                      name={isActive ? "checkmark" : step.icon as any}
+                      size={14}
+                      color={isActive || isComplete ? colors.onPrimary : colors.onSurfaceTertiary}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.stepLabel,
+                      isActive && styles.stepLabelActive,
+                    ]}
+                  >
+                    {step.label}
+                  </Text>
+                  {index < STATUS_STEPS.length - 1 && (
+                    <View
+                      style={[
+                        styles.stepLine,
+                        isComplete && { backgroundColor: colors.success },
+                      ]}
+                    />
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        {/* Items Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="basket" size={18} color={colors.onSurfaceSecondary} />
+            <Text style={styles.cardTitle}>
+              {itemCount} Item{itemCount !== 1 ? "s" : ""}
+            </Text>
+          </View>
+          {order.items.map((item: any, index: number) => (
+            <View
+              key={index}
+              style={[
+                styles.itemRow,
+                index < order.items.length - 1 && styles.itemBorder,
+              ]}
+            >
+              <Image
+                source={{
+                  uri: item.product?.images?.[0]?.url
+                    ? `${BACKEND_URL}${item.product.images[0].url}`
+                    : "https://placehold.co/48x48/F2F2F7/000000?text=P",
+                }}
+                style={styles.itemImage}
+              />
+              <View style={styles.itemInfo}>
+                <Text style={styles.itemName} numberOfLines={1}>
+                  {item.product?.title || "Product"}
+                </Text>
+                <Text style={styles.itemMeta}>
+                  {item.quantity} × ₹{Number(item.price)}
+                </Text>
+              </View>
+              <Text style={styles.itemPrice}>
+                ₹{Number(item.price) * item.quantity}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Summary Card */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="wallet" size={18} color={colors.onSurfaceSecondary} />
+            <Text style={styles.cardTitle}>Payment</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Subtotal</Text>
+            <Text style={styles.summaryValue}>₹{total.toFixed(2)}</Text>
+          </View>
+          {negotiatedTotal && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Negotiated Discount</Text>
+              <Text style={styles.summaryDiscount}>
+                -₹{(total - negotiatedTotal).toFixed(2)}
+              </Text>
+            </View>
+          )}
+          <View style={[styles.summaryRow, styles.totalRow]}>
+            <Text style={styles.totalLabel}>Total Paid</Text>
+            <Text style={styles.totalValue}>₹{finalTotal.toFixed(2)}</Text>
           </View>
         </View>
-      ) : (
-        <View style={styles.statusTimeline}>
-        {STATUS_STEPS.map((step, index) => (
-          <View key={step.status} style={styles.timelineStep}>
-            <View
-              style={[
-                styles.timelineIcon,
-                index <= currentIndex && styles.timelineIconActive,
-                index < currentIndex && styles.timelineIconComplete,
-              ]}
-            >
-              <Ionicons
-                name={step.icon as any}
-                size={16}
-                color={
-                  index <= currentIndex
-                    ? colors.onPrimary
-                    : colors.onSurfaceTertiary
-                }
-              />
+
+        {/* Delivery Address */}
+        {order.shippingAddress && (
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Ionicons name="location" size={18} color={colors.onSurfaceSecondary} />
+              <Text style={styles.cardTitle}>Delivery Address</Text>
             </View>
-            <Text
-              style={[
-                styles.timelineLabel,
-                index <= currentIndex && styles.timelineLabelActive,
-              ]}
-            >
-              {step.label}
-            </Text>
-            {index < STATUS_STEPS.length - 1 && (
-              <View
-                style={[
-                  styles.timelineLine,
-                  index < currentIndex && styles.timelineLineComplete,
-                ]}
-              />
-            )}
+            <Text style={styles.addressText}>{order.shippingAddress}</Text>
           </View>
-        ))}
-      </View>
-      )} 
-       <View style={styles.receiptContainer}>
-         <View style={styles.receiptHeader}>
-           <Text style={styles.receiptTitle}>Order Receipt</Text>
-           <Text style={styles.orderDate}>
-             {new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString()}
-           </Text>
-         </View>
-         
-         <View style={styles.receiptSection}>
-           <Text style={styles.sectionTitle}>Order Items</Text>
-           {order.items.map((item: any, index: number) => (
-             <View key={index} style={styles.receiptItem}>
-                <View style={styles.receiptItemLeft}>
-                  <Text style={styles.itemTitle}>{item.product.title}</Text>
-                  <Text style={styles.itemQuantity}>x{item.quantity} • ₹{item.product.price}/unit</Text>
-                </View>
-               <Text style={styles.itemPrice}>
-                 ₹{item.product.price * item.quantity}
-               </Text>
-             </View>
-           ))}
-         </View>
+        )}
 
-         <View style={styles.receiptDivider} />
+        {/* Farmer Info */}
+        {order.farmer && (
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Ionicons name="leaf" size={18} color={colors.onSurfaceSecondary} />
+              <Text style={styles.cardTitle}>Farmer</Text>
+            </View>
+            <View style={styles.farmerRow}>
+              <View style={styles.farmerAvatar}>
+                <Text style={styles.farmerAvatarText}>
+                  {order.farmer.name.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+              <View style={styles.farmerInfo}>
+                <Text style={styles.farmerName}>{order.farmer.name}</Text>
+                {order.farmer.phone && (
+                  <Text style={styles.farmerPhone}>{order.farmer.phone}</Text>
+                )}
+              </View>
+              {order.farmer.phone && (
+                <TouchableOpacity
+                  style={styles.farmerCallBtn}
+                  onPress={handleCallFarmer}
+                >
+                  <Ionicons name="call" size={20} color={colors.onPrimary} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        )}
 
-         <View style={styles.receiptRow}>
-           <Text style={styles.receiptLabel}>Subtotal</Text>
-           <Text style={styles.receiptValue}>₹{order.totalAmount}</Text>
-         </View>
-         
-         {order.negotiatedTotal && (
-           <View style={styles.receiptRow}>
-             <Text style={styles.receiptLabel}>Negotiated Total</Text>
-             <Text style={[styles.receiptValue, styles.negotiatedValue]}>₹{order.negotiatedTotal}</Text>
-           </View>
-         )}
-
-         <View style={styles.receiptDivider} />
-
-         <View style={styles.receiptRow}>
-           <Text style={styles.receiptTotalLabel}>Total</Text>
-           <Text style={styles.receiptTotalValue}>
-             ₹{order.negotiatedTotal || order.totalAmount}
-           </Text>
-         </View>
-       </View>
-
-       <View style={styles.section}>
-           <Text style={styles.sectionTitle}>Delivery Address</Text>
-           <Text style={styles.addressText}>
-             {order.shippingAddress || "Not provided"}
-           </Text>
-         </View>
-
-       {order.farmer && (
-         <View style={styles.section}>
-           <Text style={styles.sectionTitle}>Farmer</Text>
-           <View style={styles.farmerRow}>
-             <Text style={styles.farmerName}>{order.farmer.name}</Text>
-             {order.farmer.phone && (
-               <TouchableOpacity style={styles.callButton}>
-                 <Ionicons name="call" size={20} color={colors.primary} />
-               </TouchableOpacity>
-             )}
-           </View>
-         </View>
-       )}
-     </ScrollView>
-   );
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -200,15 +306,69 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.background,
   },
-  errorText: { ...typography.body, color: colors.error },
-  statusTimeline: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: spacing.md,
-    backgroundColor: colors.surfaceElevated,
+  centerContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: spacing.xl,
   },
-  timelineStep: { alignItems: "center", flex: 1 },
-  timelineIcon: {
+  errorText: {
+    ...typography.title3,
+    color: colors.onSurfaceSecondary,
+    marginTop: spacing.md,
+    textAlign: "center",
+  },
+  backButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    marginTop: spacing.lg,
+  },
+  backButtonText: { ...typography.button, color: colors.onPrimary },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.separatorOpaque,
+    backgroundColor: colors.background,
+  },
+  backBtn: { padding: spacing.xs },
+  headerCenter: { flex: 1, alignItems: "center" },
+  headerTitle: { ...typography.headline, color: colors.onSurface },
+  headerDate: { ...typography.caption2, color: colors.onSurfaceSecondary },
+  headerRight: { width: 40 },
+  scrollContent: { paddingBottom: spacing.xxl },
+  statusBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
+    justifyContent: "center",
+  },
+  terminalStatus: {
+    ...typography.title3,
+    fontWeight: "700",
+  },
+  statusCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    padding: spacing.md,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.separatorOpaque,
+    gap: spacing.xs,
+  },
+  stepItem: { flex: 1, alignItems: "center", position: "relative" },
+  stepDot: {
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -217,120 +377,109 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: spacing.xs,
   },
-  timelineIconActive: { backgroundColor: colors.primary },
-  timelineIconComplete: { backgroundColor: colors.success },
-  timelineLabel: {
+  stepLabel: {
     ...typography.caption2,
     color: colors.onSurfaceTertiary,
     textAlign: "center",
+    lineHeight: 14,
   },
-  timelineLabelActive: { color: colors.primary, fontWeight: "600" },
-  timelineLine: {
+  stepLabelActive: { color: colors.primary, fontWeight: "600" },
+  stepLine: {
     position: "absolute",
     top: 16,
     left: "50%",
-    right: "-50%",
+    width: "100%",
     height: 2,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.separatorOpaque,
   },
-  timelineLineComplete: { backgroundColor: colors.success },
-  section: {
+  card: {
+    backgroundColor: colors.surfaceElevated,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    borderRadius: borderRadius.lg,
     padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
+    borderWidth: 1,
+    borderColor: colors.separatorOpaque,
   },
-  sectionTitle: {
-    ...typography.headline,
-    color: colors.onSurface,
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
     marginBottom: spacing.sm,
   },
-  item: {
+  cardTitle: { ...typography.headline, color: colors.onSurface },
+  itemRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: spacing.sm,
   },
+  itemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.separatorOpaque,
+    paddingBottom: spacing.md,
+  },
   itemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: spacing.sm,
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.sm,
     backgroundColor: colors.surface,
   },
   itemInfo: { flex: 1, marginLeft: spacing.md },
-  itemTitle: { ...typography.body, color: colors.onSurface },
-  itemQuantity: { ...typography.caption1, color: colors.onSurfaceSecondary },
+  itemName: { ...typography.body, color: colors.onSurface },
+  itemMeta: { ...typography.caption1, color: colors.onSurfaceSecondary },
   itemPrice: { ...typography.headline, color: colors.primary },
-  addressText: { ...typography.body, color: colors.onSurfaceSecondary },
-  receiptContainer: {
-    backgroundColor: colors.surface,
-    margin: spacing.md,
-    borderRadius: spacing.md,
-    padding: spacing.md,
-  },
-  receiptHeader: {
-    alignItems: "center",
-    marginBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-    paddingBottom: spacing.md,
-  },
-  receiptTitle: { ...typography.title2, color: colors.onSurface },
-  orderDate: { ...typography.caption1, color: colors.onSurfaceSecondary },
-  receiptSection: { marginVertical: spacing.md },
-  receiptItem: {
+  summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.xs,
   },
-  receiptItemLeft: { flex: 1 },
-  receiptDivider: {
-    height: 1,
-    backgroundColor: colors.separator,
-    marginVertical: spacing.md,
-  },
-  receiptRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: spacing.sm,
-  },
-  receiptLabel: { ...typography.body, color: colors.onSurfaceSecondary },
-  receiptValue: { ...typography.body, color: colors.onSurface },
-  negotiatedValue: { color: colors.primary, fontWeight: "600" },
-  receiptTotalLabel: { ...typography.title3, color: colors.onSurface },
-  receiptTotalValue: { ...typography.title3, color: colors.primary },
-  farmerRow: { flexDirection: "row", alignItems: "center" },
-  farmerName: { ...typography.body, color: colors.onSurface, flex: 1 },
-  callButton: { padding: spacing.sm },
-  divider: {
-    height: 1,
-    backgroundColor: colors.separator,
-    marginHorizontal: spacing.md,
+  summaryLabel: { ...typography.body, color: colors.onSurfaceSecondary },
+  summaryValue: { ...typography.body, color: colors.onSurface },
+  summaryDiscount: {
+    ...typography.body,
+    color: colors.success,
+    fontWeight: "600",
   },
   totalRow: {
+    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.separatorOpaque,
+  },
+  totalLabel: { ...typography.title3, color: colors.onSurface },
+  totalValue: { ...typography.title3, color: colors.primary },
+  addressText: {
+    ...typography.body,
+    color: colors.onSurfaceSecondary,
+    lineHeight: 22,
+  },
+  farmerRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    padding: spacing.md,
-  },
-  totalLabel: { ...typography.title2, color: colors.onSurface },
-  totalValue: { ...typography.title2, color: colors.primary },
-  statusBadgeContainer: {
     alignItems: "center",
-    padding: spacing.xl,
   },
-  statusBadge: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: spacing.sm,
+  farmerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.primary + "20",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  statusBadgeText: {
+  farmerAvatarText: {
     ...typography.headline,
-    color: colors.onPrimary,
+    color: colors.primary,
     fontWeight: "700",
   },
-  statusRejected: {
-    backgroundColor: colors.error,
+  farmerInfo: { flex: 1, marginLeft: spacing.md },
+  farmerName: { ...typography.body, color: colors.onSurface },
+  farmerPhone: { ...typography.caption1, color: colors.onSurfaceSecondary },
+  farmerCallBtn: {
+    backgroundColor: colors.primary,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  statusCancelled: {
-    backgroundColor: colors.error,
-  },
+  bottomSpacer: { height: spacing.xl },
 });

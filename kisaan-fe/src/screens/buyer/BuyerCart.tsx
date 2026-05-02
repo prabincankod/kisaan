@@ -36,7 +36,7 @@ type CartItem = {
 
 export default function BuyerCart() {
   const navigation = useNavigation<any>();
-  const { items, removeItem, updateQuantity, clearCart, getTotal } =
+  const { items, removeItem, updateQuantity, clearCart, getTotal, farmerName, farmerId } =
     useCartStore();
   const [address, setAddress] = useState("");
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -47,17 +47,35 @@ export default function BuyerCart() {
 
   useEffect(() => {
     if (error) {
-      Alert.alert("Cannot Add Item", error, [
-        { text: "OK", onPress: clearError },
-        {
-          text: "Clear Cart",
-          style: "destructive",
-          onPress: () => {
-            clearCart();
-            clearError();
+      if (error.includes("Replace cart")) {
+        Alert.alert(
+          "Different Farmer",
+          error,
+          [
+            { text: "Cancel", style: "cancel", onPress: clearError },
+            {
+              text: "Replace Cart",
+              style: "destructive",
+              onPress: () => {
+                clearCart();
+                clearError();
+              },
+            },
+          ]
+        );
+      } else {
+        Alert.alert("Cannot Add Item", error, [
+          { text: "OK", onPress: clearError },
+          {
+            text: "Clear Cart",
+            style: "destructive",
+            onPress: () => {
+              clearCart();
+              clearError();
+            },
           },
-        },
-      ]);
+        ]);
+      }
     }
   }, [error]);
 
@@ -163,6 +181,12 @@ export default function BuyerCart() {
 
   return (
     <View style={styles.container}>
+      {farmerName && (
+        <View style={styles.farmerBanner}>
+          <Ionicons name="person" size={18} color={colors.onPrimary} />
+          <Text style={styles.farmerBannerText}>Ordering from {farmerName}</Text>
+        </View>
+      )}
       <FlatList
         data={items}
         renderItem={renderItem}
@@ -305,6 +329,20 @@ export default function BuyerCart() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  farmerBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  farmerBannerText: {
+    ...typography.subhead,
+    color: colors.onPrimary,
+    fontWeight: "600",
+  },
   listContent: { flexGrow: 1 },
   cartItem: {
     flexDirection: "row",

@@ -14,7 +14,7 @@ interface CartState {
   farmerId: number | null;
   farmerName: string | null;
   error: string | null;
-  addItem: (product: Product, quantity: number) => { success: boolean; message?: string };
+  addItem: (product: Product, quantity: number, replaceCart?: boolean) => { success: boolean; message?: string };
   updateQuantity: (productId: number, quantity: number) => void;
   removeItem: (productId: number) => void;
   clearCart: () => void;
@@ -30,13 +30,23 @@ export const useCartStore = create<CartState>()(
       farmerName: null,
       error: null,
 
-      addItem: (product, quantity) => {
-        const { items, farmerId } = get();
+      addItem: (product, quantity, replaceCart = false) => {
+        const { items, farmerId, farmerName } = get();
 
-        if (farmerId && farmerId !== product.farmerId) {
-          const message = `You can only buy from ${get().farmerName} at a time. Clear your cart to add items from ${product.farmer?.name || "this farmer"}.`;
+        if (farmerId && farmerId !== product.farmerId && !replaceCart) {
+          const message = `You can only order from one farmer at a time. Your cart has items from ${farmerName}. Replace cart to add items from ${product.farmer?.name || "this farmer"}?`;
           set({ error: message });
           return { success: false, message };
+        }
+
+        if (farmerId && farmerId !== product.farmerId && replaceCart) {
+          set({
+            items: [{ id: `${product.id}-${Date.now()}`, product, quantity }],
+            farmerId: product.farmerId,
+            farmerName: product.farmer?.name || "Farmer",
+            error: null,
+          });
+          return { success: true };
         }
 
         const existingIndex = items.findIndex(

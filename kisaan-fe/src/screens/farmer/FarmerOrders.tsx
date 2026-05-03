@@ -271,7 +271,12 @@ export default function FarmerOrders() {
         renderItem={renderTab}
         keyExtractor={(item) => item.status}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.tabsContainer}
+        style={{ maxHeight: 44 }} 
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          alignItems: "center", 
+        }}
+
       />
 
       <FlatList

@@ -14,12 +14,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getQuotations, respondToQuotation, Quotation } from "../../api/quotation.api";
-import { colors, typography, spacing } from "../../theme/designSystem";
+import { colors, typography, spacing, borderRadius } from "../../theme/designSystem";
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: colors.warning,
-  accepted: colors.success,
-  rejected: colors.error,
+const STATUS_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
+  pending: { color: colors.warning, icon: "time", label: "Pending" },
+  accepted: { color: colors.success, icon: "checkmark-circle", label: "Accepted" },
+  rejected: { color: colors.error, icon: "close-circle", label: "Cancelled" },
 };
 
 export default function BuyerQuotations() {
@@ -35,7 +35,7 @@ export default function BuyerQuotations() {
     },
   });
 
-  const { mutate: cancelQuotation } = useMutation({
+  const { mutate: cancelQuotation, isPending: isCancelling } = useMutation({
     mutationFn: (id: number) => respondToQuotation(id, "rejected"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["buyer-quotations"] });
@@ -51,48 +51,81 @@ export default function BuyerQuotations() {
   };
 
   const handleCancel = (id: number) => {
-    Alert.alert("Cancel Quotation", "Are you sure you want to cancel this quotation?", [
+    Alert.alert("Cancel Quotation", "Are you sure?", [
       { text: "No", style: "cancel" },
-      { text: "Yes", onPress: () => cancelQuotation(id) },
+      { text: "Yes", style: "destructive", onPress: () => cancelQuotation(id) },
     ]);
   };
 
   const renderQuotation = ({ item }: { item: Quotation }) => {
-    const total = item.items.reduce((sum, i) => sum + Number(i.offeredPrice || i.price || 0) * i.quantity, 0);
+    const statusConfig = STATUS_CONFIG[item.status] || STATUS_CONFIG.pending;
+    const total = item.items.reduce(
+      (sum, i) => sum + Number(i.offeredPrice || i.price || 0) * i.quantity,
+      0
+    );
+    const itemCount = item.items.length;
+
     return (
       <View style={styles.card}>
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.farmerName}>{item.farmer?.name || "Farmer"}</Text>
-            <Text style={styles.date}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+        <View style={styles.cardHeader}>
+          <View style={styles.farmerRow}>
+            <View style={styles.farmerAvatar}>
+              <Ionicons name="person" size={18} color={colors.primary} />
+            </View>
+            <View style={styles.farmerInfo}>
+              <Text style={styles.farmerName} numberOfLines={1}>{item.farmer?.name || "Farmer"}</Text>
+              <Text style={styles.date}>
+                {new Date(item.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
+              </Text>
+            </View>
           </View>
-          <View style={[styles.badge, { backgroundColor: STATUS_COLORS[item.status] || colors.onSurfaceSecondary }]}>
-            <Text style={styles.badgeText}>{item.status}</Text>
+          <View style={[styles.badge, { borderColor: statusConfig.color, alignSelf: "flex-start" }]}>
+            <Ionicons name={statusConfig.icon as any} size={12} color={statusConfig.color} />
+            <Text style={[styles.badgeText, { color: statusConfig.color }]}>
+              {statusConfig.label}
+            </Text>
           </View>
         </View>
+
+        <View style={styles.divider} />
 
         <View style={styles.items}>
           {item.items.map((i, idx) => {
             const price = Number(i.offeredPrice || i.price || 0);
             return (
               <View key={idx} style={styles.itemRow}>
-                <Text style={styles.itemTitle} numberOfLines={1}>
-                  {i.product?.title || "Item"} × {i.quantity} {i.product?.unit}
-                </Text>
+                <View style={styles.itemInfo}>
+                  <Text style={styles.itemTitle} numberOfLines={1}>
+                    {i.product?.title || "Item"}
+                  </Text>
+                  <Text style={styles.itemMeta}>
+                    {i.quantity} × ₹{price}
+                  </Text>
+                </View>
                 <Text style={styles.itemPrice}>₹{price * i.quantity}</Text>
               </View>
             );
           })}
         </View>
 
-        <View style={styles.footer}>
-          <Text style={styles.total}>Total: ₹{total}</Text>
+        <View style={[styles.divider, styles.bottomDivider]} />
+
+        <View style={styles.cardFooter}>
+          <View>
+            <Text style={styles.totalLabel}>{itemCount} item{itemCount !== 1 ? "s" : ""}</Text>
+            <Text style={styles.totalValue}>₹{total.toFixed(2)}</Text>
+          </View>
           {item.status === "pending" && (
             <TouchableOpacity
-              style={styles.cancelButton}
+              style={[styles.cancelButton, isCancelling && styles.cancelButtonDisabled]}
               onPress={() => handleCancel(item.id)}
+              disabled={isCancelling}
             >
-              <Text style={styles.cancelText}>Cancel</Text>
+              {isCancelling ? (
+                <ActivityIndicator size="small" color={colors.error} />
+              ) : (
+                <Text style={styles.cancelText}>Cancel</Text>
+              )}
             </TouchableOpacity>
           )}
           {item.status === "accepted" && (
@@ -113,8 +146,9 @@ export default function BuyerQuotations() {
       </View>
     ) : (
       <View style={styles.emptyContainer}>
-        <Ionicons name="document-text" size={48} color={colors.onSurfaceTertiary} />
-        <Text style={styles.emptyText}>No quotations yet</Text>
+        <Ionicons name="document-text" size={56} color={colors.onSurfaceTertiary} />
+        <Text style={styles.emptyTitle}>No quotations yet</Text>
+        <Text style={styles.emptyText}>Negotiate on products to create quotations</Text>
         <TouchableOpacity
           style={styles.shopButton}
           onPress={() => navigation.navigate("Home")}
@@ -126,8 +160,15 @@ export default function BuyerQuotations() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <View style={styles.header}>
+      <View style={styles.pageHeader}>
         <Text style={styles.headerTitle}>Quotations</Text>
+        <TouchableOpacity
+          style={styles.refreshBtn}
+          onPress={onRefresh}
+          disabled={refreshing}
+        >
+          <Ionicons name="refresh" size={20} color={colors.onSurfaceSecondary} />
+        </TouchableOpacity>
       </View>
       <FlatList
         data={quotations}
@@ -150,83 +191,93 @@ export default function BuyerQuotations() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separatorOpaque,
-  },
-  headerTitle: { ...typography.title1, color: colors.onSurface },
-  listContent: { flexGrow: 1, paddingBottom: spacing.xxl },
-  card: {
-    backgroundColor: colors.surfaceElevated,
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.xs,
-    borderRadius: spacing.md,
-    padding: spacing.md,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  header: {
+  pageHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
-  headerLeft: { flex: 1 },
+  headerTitle: { ...typography.title1, color: colors.onSurface },
+  refreshBtn: { padding: spacing.xs },
+  listContent: { flexGrow: 1, paddingBottom: spacing.xl },
+  card: {
+    backgroundColor: colors.surfaceElevated,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.separatorOpaque,
+  },
+  cardHeader: {
+    padding: spacing.md,
+    paddingBottom: spacing.sm,
+  },
+  farmerRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm, marginBottom: spacing.sm },
+  farmerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.surface,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  farmerInfo: { flex: 1 },
   farmerName: { ...typography.headline, color: colors.onSurface },
-  date: { ...typography.caption1, color: colors.onSurfaceSecondary, marginTop: 2 },
+  date: { ...typography.caption2, color: colors.onSurfaceSecondary },
   badge: {
-    borderRadius: spacing.sm,
-    paddingHorizontal: spacing.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 12,
+    paddingHorizontal: 10,
     paddingVertical: 4,
+    borderWidth: 1,
+    alignSelf: "flex-start",
   },
-  badgeText: { ...typography.caption1, color: colors.white, fontWeight: "600" },
-  items: { marginTop: spacing.md, gap: spacing.xs },
+  badgeText: { ...typography.caption2, fontWeight: "600" },
+  divider: { height: 1, backgroundColor: colors.separator, marginHorizontal: spacing.md },
+  bottomDivider: { marginTop: 0 },
+  items: { padding: spacing.md, gap: spacing.sm },
   itemRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  itemTitle: { ...typography.body, color: colors.onSurfaceSecondary, flex: 1 },
-  itemPrice: { ...typography.subhead, color: colors.primary },
-  footer: {
+  itemInfo: { flex: 1, marginRight: spacing.md },
+  itemTitle: { ...typography.body, color: colors.onSurface },
+  itemMeta: { ...typography.caption1, color: colors.onSurfaceSecondary, marginTop: 2 },
+  itemPrice: { ...typography.headline, color: colors.primary, fontWeight: "600" },
+  cardFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.separator,
+    padding: spacing.md,
   },
-  total: { ...typography.headline, color: colors.onSurface },
+  totalLabel: { ...typography.caption2, color: colors.onSurfaceSecondary },
+  totalValue: { ...typography.title3, color: colors.onSurface, fontWeight: "700" },
   cancelButton: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.error + "15",
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: spacing.sm,
+    borderRadius: borderRadius.sm,
   },
-  cancelText: { ...typography.subhead, color: colors.error },
+  cancelButtonDisabled: { opacity: 0.5 },
+  cancelText: { ...typography.subhead, color: colors.error, fontWeight: "600" },
   acceptedNote: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
-  acceptedText: { ...typography.subhead, color: colors.success },
+  acceptedText: { ...typography.subhead, color: colors.success, fontWeight: "600" },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.xl,
   },
-  emptyText: {
-    ...typography.body,
-    color: colors.onSurfaceSecondary,
-    marginTop: spacing.md,
-  },
+  emptyTitle: { ...typography.title3, color: colors.onSurfaceSecondary, marginTop: spacing.md },
+  emptyText: { ...typography.body, color: colors.onSurfaceTertiary, marginTop: spacing.xs, textAlign: "center" },
   shopButton: {
     backgroundColor: colors.primary,
-    borderRadius: spacing.sm,
+    borderRadius: borderRadius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     marginTop: spacing.lg,

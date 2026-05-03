@@ -13,33 +13,29 @@ import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getOrders } from "../../api/order.api";
-import { colors, typography, spacing } from "../../theme/designSystem";
+import { colors, typography, spacing, borderRadius } from "../../theme/designSystem";
 
 type Order = {
   id: number;
   status: string;
-  total: number;
-  items: { product: { title: string } }[];
+  totalAmount: number;
+  items: { product: { title: string }; quantity: number }[];
   createdAt: string;
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: colors.warning,
-  confirmed: colors.info,
-  shipped: colors.info,
-  delivered: colors.success,
-  rejected: colors.error,
-  cancelled: colors.error,
+const STATUS_CONFIG: Record<string, { color: string; icon: string }> = {
+  pending: { color: colors.warning, icon: "time" },
+  confirmed: { color: colors.info, icon: "checkmark-circle" },
+  shipped: { color: colors.info, icon: "boat" },
+  delivered: { color: colors.success, icon: "flag" },
+  rejected: { color: colors.error, icon: "close-circle" },
+  cancelled: { color: colors.error, icon: "ban" },
 };
 
 export default function BuyerOrders() {
   const navigation = useNavigation<any>();
   const [refreshing, setRefreshing] = useState(false);
-  const {
-    data: ordersData,
-    isLoading,
-    refetch,
-  } = useQuery({
+  const { data: ordersData, isLoading, refetch } = useQuery({
     queryKey: ["buyer-orders"],
     queryFn: async () => {
       const res: any = await getOrders({ limit: 20 });
@@ -47,56 +43,54 @@ export default function BuyerOrders() {
     },
   });
   const orders: Order[] = ordersData?.orders || [];
+
   const onRefresh = async () => {
     setRefreshing(true);
     await refetch();
     setRefreshing(false);
   };
 
-  const renderOrder = ({ item }: { item: Order }) => (
-    <TouchableOpacity
-      style={styles.orderCard}
-      onPress={() =>
-        navigation.navigate("BuyerOrderDetail", { orderId: item.id })
-      }
-    >
-      <View style={styles.orderHeader}>
-        <Text style={styles.orderId}>Order #{item.id}</Text>
-        <View
-          style={[
-            styles.statusBadge,
-            {
-              backgroundColor:
-                STATUS_COLORS[item.status] || colors.onSurfaceSecondary,
-            },
-          ]}
-        >
-          <Text style={styles.statusText}>{item.status}</Text>
+  const renderOrder = ({ item }: { item: Order }) => {
+    const statusConfig = STATUS_CONFIG[item.status] || { color: colors.onSurfaceSecondary, icon: "information-circle" };
+    return (
+      <TouchableOpacity
+        style={styles.orderCard}
+        onPress={() => navigation.navigate("BuyerOrderDetail", { orderId: item.id })}
+        activeOpacity={0.7}
+      >
+        <View style={styles.orderTop}>
+          <View style={styles.orderIdRow}>
+            <Text style={styles.orderId}>#{item.id}</Text>
+            <View style={[styles.statusBadge, { borderColor: statusConfig.color }]}>
+              <Ionicons name={statusConfig.icon as any} size={12} color={statusConfig.color} />
+              <Text style={[styles.statusText, { color: statusConfig.color }]}>
+                {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+              </Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.onSurfaceTertiary} />
         </View>
-      </View>
-      <View style={styles.orderItems}>
-        <Text style={styles.itemTitle} numberOfLines={1}>
-          {item.items?.[0]?.product?.title || "Item"}
-        </Text>
-        <Text style={styles.moreItems}>
-          {item.items && item.items.length > 1
-            ? `+${item.items.length - 1} more`
-            : ""}
-        </Text>
-      </View>
-      <View style={styles.orderFooter}>
-        <Text style={styles.orderDate}>
-          {new Date(item.createdAt).toLocaleDateString()}
-        </Text>
-        <Text style={styles.orderTotal}>₹{item.total}</Text>
-      </View>
-      <Ionicons
-        name="chevron-forward"
-        size={20}
-        color={colors.onSurfaceSecondary}
-      />
-    </TouchableOpacity>
-  );
+
+        <View style={styles.orderItems}>
+          <Ionicons name="basket" size={14} color={colors.onSurfaceTertiary} />
+          <Text style={styles.itemTitle} numberOfLines={1}>
+            {item.items?.[0]?.product?.title || "Item"}
+            {item.items && item.items.length > 1 && ` +${item.items.length - 1}`}
+          </Text>
+        </View>
+
+        <View style={styles.orderFooter}>
+          <View style={styles.dateRow}>
+            <Ionicons name="calendar" size={14} color={colors.onSurfaceTertiary} />
+            <Text style={styles.orderDate}>
+              {new Date(item.createdAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
+            </Text>
+          </View>
+          <Text style={styles.orderTotal}>₹{Number(item.totalAmount).toFixed(2)}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const ListEmpty = () =>
     isLoading ? (
@@ -105,8 +99,9 @@ export default function BuyerOrders() {
       </View>
     ) : (
       <View style={styles.emptyContainer}>
-        <Ionicons name="receipt" size={48} color={colors.onSurfaceTertiary} />
-        <Text style={styles.emptyText}>No orders yet</Text>
+        <Ionicons name="receipt" size={56} color={colors.onSurfaceTertiary} />
+        <Text style={styles.emptyTitle}>No orders yet</Text>
+        <Text style={styles.emptyText}>Your placed orders will appear here</Text>
         <TouchableOpacity
           style={styles.shopButton}
           onPress={() => navigation.navigate("Home")}
@@ -118,8 +113,15 @@ export default function BuyerOrders() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Orders</Text>
+      <View style={styles.pageHeader}>
+        <Text style={styles.headerTitle}>My Orders</Text>
+        <TouchableOpacity
+          style={styles.refreshBtn}
+          onPress={onRefresh}
+          disabled={refreshing}
+        >
+          <Ionicons name="refresh" size={20} color={colors.onSurfaceSecondary} />
+        </TouchableOpacity>
       </View>
       <FlatList
         data={orders}
@@ -142,71 +144,74 @@ export default function BuyerOrders() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separatorOpaque,
-  },
-  headerTitle: { ...typography.title1, color: colors.onSurface },
-  listContent: { flexGrow: 1 },
-  orderCard: {
-    backgroundColor: colors.surfaceElevated,
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.xs,
-    borderRadius: spacing.md,
-    padding: spacing.md,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  orderHeader: {
+  pageHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
-  orderId: { ...typography.headline, color: colors.onSurface },
+  headerTitle: { ...typography.title1, color: colors.onSurface },
+  refreshBtn: { padding: spacing.xs },
+  listContent: { flexGrow: 1, paddingBottom: spacing.xl },
+  orderCard: {
+    backgroundColor: colors.surfaceElevated,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.separatorOpaque,
+  },
+  orderTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacing.sm,
+  },
+  orderIdRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  orderId: { ...typography.headline, color: colors.onSurface, fontWeight: "700" },
   statusBadge: {
-    borderRadius: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 1,
+    flexShrink: 0,
   },
-  statusText: {
-    ...typography.caption1,
-    color: colors.white,
-    fontWeight: "600",
+  statusText: { ...typography.caption2, fontWeight: "600" },
+  orderItems: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    marginBottom: spacing.sm,
   },
-  orderItems: { marginTop: spacing.sm },
-  itemTitle: { ...typography.body, color: colors.onSurfaceSecondary },
-  moreItems: {
-    ...typography.caption1,
-    color: colors.onSurfaceTertiary,
-    marginLeft: spacing.xs,
-  },
+  itemTitle: { ...typography.body, color: colors.onSurfaceSecondary, flex: 1 },
   orderFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: spacing.sm,
+    paddingTop: spacing.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.separator,
   },
+  dateRow: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
   orderDate: { ...typography.caption1, color: colors.onSurfaceTertiary },
-  orderTotal: { ...typography.headline, color: colors.primary },
+  orderTotal: { ...typography.headline, color: colors.primary, fontWeight: "700" },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.xl,
   },
-  emptyText: {
-    ...typography.body,
-    color: colors.onSurfaceSecondary,
-    marginTop: spacing.md,
-  },
+  emptyTitle: { ...typography.title3, color: colors.onSurfaceSecondary, marginTop: spacing.md },
+  emptyText: { ...typography.body, color: colors.onSurfaceTertiary, marginTop: spacing.xs, textAlign: "center" },
   shopButton: {
     backgroundColor: colors.primary,
-    borderRadius: spacing.sm,
+    borderRadius: borderRadius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     marginTop: spacing.lg,

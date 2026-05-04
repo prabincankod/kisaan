@@ -30,7 +30,7 @@ export const useAuth = () => {
         data.token,
       );
       navigation.replace(
-        data.user.role === "farmer" ? "FarmerTabs" : "BuyerTabs",
+        data.user.role === "farmer" ? "FarmerTabs" : "Home",
       );
     },
     onError: (error: any) => {

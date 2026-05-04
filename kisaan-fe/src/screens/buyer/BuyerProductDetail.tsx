@@ -14,11 +14,10 @@ import {
   Modal,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { getProduct, Product } from "../../api/product.api";
 import { useCartStore } from "../../store/cart.store";
-import { createQuotation } from "../../api/quotation.api";
 import { colors, typography, spacing, borderRadius } from "../../theme/designSystem";
 import { BACKEND_URL } from "../../api/client";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -60,13 +59,10 @@ const MemoizedThumbnail = memo(function ThumbnailItem({
 export default function BuyerProductDetail() {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const queryClient = useQueryClient();
   const { productId } = route.params;
   const [quantity, setQuantity] = useState(1);
   const { addItem } = useCartStore();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [showNegotiate, setShowNegotiate] = useState(false);
-  const [offeredPrice, setOfferedPrice] = useState("");
   const [showCartModal, setShowCartModal] = useState(false);
 
   const { data: product, isLoading } = useQuery({
@@ -77,32 +73,6 @@ export default function BuyerProductDetail() {
     },
   });
 
-
-  const { mutate: submitQuotation, isPending: isNegotiating } = useMutation({
-    mutationFn: (params: {
-      farmerId: number;
-      productId: number;
-      quantity: number;
-      price: number;
-    }) =>
-      createQuotation({
-        farmerId: params.farmerId,
-        items: [
-          {
-            productId: params.productId,
-            quantity: params.quantity,
-            offeredPrice: params.price,
-          },
-        ],
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["buyer-quotations"] });
-      setShowNegotiate(false);
-      setOfferedPrice("");
-      Alert.alert("Success", "Negotiation request sent to farmer!");
-    },
-    onError: () => Alert.alert("Error", "Failed to send negotiation request"),
-  });
 
   const handleAddToCart = useCallback(() => {
     if (!product) return;
@@ -135,28 +105,6 @@ export default function BuyerProductDetail() {
       Alert.alert("Cannot Add", result.message || "Failed to add to cart");
     }
   }, [product, quantity, addItem]);
-
-  const handleNegotiate = useCallback(() => {
-    if (!product || !offeredPrice) {
-      Alert.alert("Error", "Please enter your offered price");
-      return;
-    }
-    const price = parseFloat(offeredPrice);
-    if (isNaN(price) || price <= 0) {
-      Alert.alert("Error", "Please enter a valid price");
-      return;
-    }
-    if (price >= product.price) {
-      Alert.alert("Error", "Offered price must be less than the current price");
-      return;
-    }
-    submitQuotation({
-      farmerId: product.farmerId,
-      productId: product.id,
-      quantity,
-      price,
-    });
-  }, [product, offeredPrice, quantity, submitQuotation]);
 
   const handleImagePress = useCallback((index: number) => {
     setSelectedImageIndex(index);
@@ -366,58 +314,8 @@ export default function BuyerProductDetail() {
         >
           <View style={styles.footer}>
             <TouchableOpacity
-              style={styles.negotiateButton}
-              onPress={() => setShowNegotiate(!showNegotiate)}
-            >
-              <Ionicons
-                name={showNegotiate ? "chevron-up" : "pricetag"}
-                size={20}
-                color={colors.primary}
-              />
-              <Text style={styles.negotiateButtonText}>
-                {showNegotiate ? "Hide Negotiation" : "Negotiate Price"}
-              </Text>
-            </TouchableOpacity>
-
-            {showNegotiate && (
-              <View style={styles.negotiateSection}>
-                <View style={styles.negotiateInputRow}>
-                  <View style={styles.negotiateInputContainer}>
-                    <Text style={styles.currencySymbol}>₹</Text>
-                    <TextInput
-                      style={styles.negotiateInput}
-                      placeholder="Your offered price"
-                      placeholderTextColor={colors.onSurfaceTertiary}
-                      value={offeredPrice}
-                      onChangeText={setOfferedPrice}
-                      keyboardType="decimal-pad"
-                    />
-                  </View>
-                  <TouchableOpacity
-                    style={[
-                      styles.sendNegotiateButton,
-                      isNegotiating && styles.buttonDisabled,
-                    ]}
-                    onPress={handleNegotiate}
-                    disabled={isNegotiating}
-                  >
-                    {isNegotiating ? (
-                      <ActivityIndicator size="small" color={colors.onPrimary} />
-                    ) : (
-                      <Ionicons name="send" size={20} color={colors.onPrimary} />
-                    )}
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.negotiateHint}>
-                  Offer less than ₹{product.price} to negotiate
-                </Text>
-              </View>
-            )}
-
-            <TouchableOpacity
-              style={[styles.addToCartButton, isAvailable ? styles.cartButtonEnabled : {}]}
+              style={styles.addToCartButton}
               onPress={handleAddToCart}
-              disabled={!isAvailable}
             >
               <Ionicons name="cart" size={20} color={colors.onPrimary} />
               <Text style={styles.addToCartText}>
@@ -681,33 +579,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.separatorOpaque,
   },
-  currencySymbol: {
-    ...typography.subhead,
-    color: colors.primary,
-    fontWeight: "600",
-  },
-  negotiateInput: {
-    flex: 1,
-    ...typography.subhead,
-    color: colors.onSurface,
-    paddingVertical: spacing.sm,
-  },
-  sendNegotiateButton: {
-    backgroundColor: colors.primary,
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.md,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-  },
-  negotiateHint: {
-    ...typography.caption1,
-    color: colors.onSurfaceTertiary,
-    marginTop: spacing.xs,
-  },
   addToCartButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -716,9 +587,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     gap: spacing.sm,
-  },
-  cartButtonEnabled: {
-    backgroundColor: colors.primary,
   },
   addToCartText: {
     ...typography.button,

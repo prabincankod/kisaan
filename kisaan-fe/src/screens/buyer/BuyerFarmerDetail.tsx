@@ -21,7 +21,7 @@ import { BACKEND_URL } from "../../api/client";
 
 export default function BuyerFarmerDetail() {
   const route = useRoute<any>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { farmerId } = route.params;
 
   const { data: farmerData, isLoading: farmerLoading } = useQuery({

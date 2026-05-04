@@ -47,7 +47,7 @@ export default function FarmerOrders() {
   });
 
   const { mutate: updateStatus } = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: string }) =>
+    mutationFn: ({ id, status }: { id: number; status: any }) =>
       updateOrderStatus(id, status),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["farmer-orders"] }),

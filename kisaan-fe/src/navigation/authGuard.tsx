@@ -38,7 +38,7 @@ export const useAuthRedirect = () => {
     } else if (user.role === "farmer") {
       navigation.replace("FarmerTabs");
     } else {
-      navigation.replace("BuyerTabs");
+      navigation.replace("Home");
     }
   }, [user, navigation]);
 };

@@ -19,7 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { getProducts } from "../../api/product.api";
 import { getFarmers } from "../../api/farmer.api";
 import { getCategories } from "../../api/category.api";
-import { colors, typography, spacing } from "../../theme/designSystem";
+import { colors, typography, spacing, borderRadius } from "../../theme/designSystem";
 import { BACKEND_URL } from "@/src/api";
 
 let Haptics: any = null;
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.surface,
-    borderRadius: spacing.full,
+    borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     marginRight: spacing.sm,
@@ -331,11 +331,30 @@ const styles = StyleSheet.create({
   },
   productPrice: { ...typography.title3, color: colors.primary },
   productUnit: { ...typography.caption1, color: colors.onSurfaceSecondary },
+  lowStockBadge: {
+    position: "absolute",
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: colors.warning + "20",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: borderRadius.full,
+  },
+  lowStockText: {
+    ...typography.caption2,
+    color: colors.warning,
+    fontWeight: "600",
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: spacing.xxl,
+  },
+  emptyTitle: {
+    ...typography.title3,
+    color: colors.onSurface,
+    marginTop: spacing.md,
   },
   emptyText: {
     ...typography.body,
